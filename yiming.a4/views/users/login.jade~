@@ -1,0 +1,16 @@
+extends ../layout
+
+block content
+  p
+   .container
+     form#formAddUser(name="loginuser",method="post",action="/users/login")
+      p Email:
+       input#inputEmail(type="text", placeholder="ex. example@email.com", name="email")
+      p Password:
+       input#inputPassword(type="password", name="password")
+      if success==false
+       p
+        .alert alert-warning
+             #{message}
+      p
+       button#btnSubmit(type="submit") submit

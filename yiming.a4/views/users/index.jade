@@ -1,0 +1,19 @@
+extends ../layout
+
+block content
+	.container
+		if user.admin == 1 || user.admin == 2
+			h1 Welcome, Admin #{user.name}
+		else
+			h1 Welcome, #{user.name}
+	ul
+		.container
+			- each tuser, i in users
+				li
+					= tuser.name + ',   '
+					= tuser.email
+					form#formShowUser(name="showuser",method="get",action="/users/#{tuser._id}")
+						input#inputUserId(type="hidden", value="#{tuser._id}", name="id")
+						input#inputRights(type="hidden", value="#{tuser.admin}", name="rights")
+						button#btnSubmit(type="submit") Details	
+					

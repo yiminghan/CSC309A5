@@ -1,0 +1,16 @@
+extends ../layout
+
+block content
+ h1.
+  #{title}
+ p
+  .container
+      form#formAddUser(name="adduser",method="post",action="/users")
+       p Name:
+        input#inputUserName(type="text", placeholder="ex. John Smith", name="name")
+       p Email:
+        input#inputEmail(type="text", placeholder="ex. example@email.com", name="email")
+       p Password:
+        input#inputPassword(type="password", name="password")
+       p
+        button#btnSubmit(type="submit") submit

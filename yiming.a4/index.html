@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="a4front.js" type="text/javascript"> </script>
+    <link rel="stlyesheet" type="text/css" href="ttp://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    
+    <br />
+  </head>
+  
+  <body onload="Start()">
+    <div id="startUp">
+    <button type="button" id="signUp" onclick="signUpPage()" > Sign up! </button>
+    <button type="button" id="login"  onclick="loginPage()"> Login! </button>
+    </div>
+  
+    <div id="loginPage">
+      Welcome to A4! <br/>
+      <form action="http://localhost:3000/api/users" method="POST">
+	Email: <input type="text" id="semail" name="name" required=""/> <br /><br />
+	Password: <input type="password" id="spassword" name="password" value="" required=""  />
+	<br /><br />
+	<input type="submit" value="Submit">
+      </form>
+      
+    </div>
+
+    <div id="signUpPage">
+      Welcome to A4!
+
+      
+      <form action="http://localhost:3000/api/users" method="POST">
+	Email: <input type="text" id="semail" name="name" required=""/> <br /><br />
+	Password: <input type="password" id="spassword" name="password" value="" required="" 
+		 />
+	<br /><br />
+	<input type="submit" value="Submit">
+      </form>
+
+
+
+
+
+
+      
+            <label for="email">User Email:<br/></label>
+            <input type="text" id="semail" name="email" placeholder="Enter your email" />
+            <br />
+            <label for="password">Password:<br/></label>
+            <input type="password" id="spassword" name="password" placeholder="Enter your password" />
+            <br />
+	    <label for="passwordr">Repeat Password:<br/></label>
+            <input type="password" id="spasswordr" name="passwordr" placeholder="Repeat your password" />
+            <br />
+            <input type="button" value="Create Profile" onclick="signUpMethod()" />
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,17 @@
+var express = require('express');
+var router = express.Router();
+var fs = require("fs");
+var path = require('path');
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'THE A4 NETWORK' });
+});
+
+
+router.use(express.static(__dirname + '/stylesheets'));
+
+router.get('/stylesheets/style.css', function(req, res, next) {
+       res.sendFile('style.css');
+});
+
+module.exports = router;

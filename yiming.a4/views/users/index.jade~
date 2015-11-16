@@ -1,0 +1,17 @@
+extends ../layout
+
+block content
+	.container
+		h1.
+			Welcome, #{user.name}
+	ul
+		.container
+			- each tuser, i in users
+				li
+					= tuser.name + ',   '
+					= tuser.email
+						form#formShowUser(name="showuser",method="post",action="/users/#{user._id}")
+						input#inputUserId(type="hidden", value=tuser._id, name="id")
+						input#inputRights(type="hidden", value=user.admin, name="rights")
+						button#btnSubmit(type="submit") Details
+					

@@ -1,0 +1,76 @@
+extends ../layout
+
+block content
+	h1
+		.container
+			User Email  #{user.email}
+	p
+		.container
+			form(action='/users/#{user._id}/edit',method='post',name='updateuser',enctype='application/x-www-form-urlencoded')
+				p Name:
+					input#inputName(type='text', value='#{user.name}', name='name')
+				p Old Password:
+					input#inputOldPassword(type='password', value='#{user.password}', name='passwordo')
+				p New Password:
+					input#inputPassword(type='password', value='#{user.password}'  name='password')
+				p Confirm Password:
+					input(type="password",name="passwordr", id="inputPasswordr")
+				p Description:
+					input(type='text', value='Write a little about yourself', name='description', id='desc')
+				p
+					input(type='hidden',value='PUT',name='_method')
+				p
+					input(type='hidden', value='#{user.admin}', name='admin')
+				p
+					button#btnSubmit(type='submit').
+						Update
+						
+				form(action='/users/login',method='post',name='backtoMain',enctype='application/x-www-form-urlencoded')
+					input#inputName(type='hidden', value='#{person.email}', name='email')
+					input#inputPassword(type='hidden', value='#{person.password}', name='password')
+					button#btnSubmit(type='submit').
+						Back
+						
+			if user.admin != 2 && rights > 0 && person.email!=user.email
+				form(action='/users/#{user._id}/edit',method='post',name='updateuser',enctype='application/x-www-form-urlencoded')
+					input(type='hidden',value='DELETE',name='_method')
+					button#btnSubmit(type='submit').
+						Delete	
+				if rights == 2 && user.admin == 0
+					form(action='/users/#{user._id}/edit',method='post',name='updateuser',enctype='application/x-www-form-urlencoded')
+						input#inputName(type='hidden', value='#{user.name}', name='name')
+						input#inputPassword(type='hidden', value='#{user.password}', name='password')
+						input(type='hidden', value='#{user.password}', name='description', id='desc')
+						input(type='hidden',value='PUT',name='_method')
+						input(type='hidden', value='1', name='admin')
+						button#btnSubmit(type='submit').
+							Make Admin
+				if rights == 2 && user.admin == 1
+					form(action='/users/#{user._id}/edit',method='post',name='updateuser',enctype='application/x-www-form-urlencoded')
+						input#inputName(type='hidden', value='#{user.name}', name='name')
+						input#inputPassword(type='hidden', value='#{user.password}', name='password')
+						input(type='hidden', value='#{user.password}', name='description', id='desc')
+						input(type='hidden',value='PUT',name='_method')
+						input(type='hidden', value='0', name='admin')
+						button#btnSubmit(type='submit').
+							Revoke Admin
+			script.
+				var password = document.getElementById("inputPassword"),
+					confirm_password = document.getElementById("inputPasswordr"),
+					oldPassword = document.getElementById("inputOldPassword"),
+					oldP = oldPassword.value;
+				oldPassword.value = '';
+				function validatePassword() {
+				if (password.value != confirm_password.value) {
+					confirm_password.setCustomValidity("Passwords Don't Match");
+				} else if(oldPassword.value != oldP)
+				{
+				  oldPassword.setCustomValidity("Password is Wrong");
+				}
+				else{
+				confirm_password.setCustomValidity('');
+				}
+				}
+				oldPassword.onchange = validatePassword;
+				password.onchange = validatePassword;
+				confirm_password.onkeyup = validatePassword;
