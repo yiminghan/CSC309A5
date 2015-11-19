@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Sign up</title>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="header.css">
+        
+    </style>
+    </head>
+    <body>
+        <div id="header" class="container-fluid">
+            <div class="row">
+                <div id="logo" class="col-xs-4">
+                    <a class="hover_no_underline" href="index.html">
+                        <!-- logo created from http://logomakr.com/1sgmNT -->
+                        <img src="logo.png" alt="logo" height="50px"; width="50px";>
+                    </a>
+                    CSC309
+                </div>
+                <div class="col-xs-8"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div style="margin-bottom: 15px;">
+                <h1 class="text-center">Enter your information</h1>
+            </div>    
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="row">
+                        <label for="inputEmail" class="control-label col-xs-2 col-xs-offset-2">Email</label>
+                        <div class="col-xs-6">
+                            <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                    <label for="inputPassword" class="control-label col-xs-2 col-xs-offset-2">Password</label>
+                        <div class="col-xs-6">
+                            <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                    <label for="inputConfirmPassword" class="control-label col-xs-2 col-xs-offset-2">Confirm password</label>
+                        <div class="col-xs-6">
+                            <input type="password" class="form-control" id="inputConfirmPassword" placeholder="Confirm password">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-4 col-xs-offset-4">
+                        <button id="btnSubmit"  class="btn btn-success btn-block">Sign up !</button>
+                        <span id="message"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script type="text/javascript" src="signup.js"></script>
+
+    <!-- A source used for getting IP address -->
+    <script type="application/javascript" src="http://www.telize.com/jsonip?callback=getip"></script>
+    </body>
+</html>
