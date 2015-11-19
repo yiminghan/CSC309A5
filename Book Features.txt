@@ -1,0 +1,13 @@
+Book Sharing Features
+1.	2  Types of Users, Admin and user.  Each user can borrow and share books.  Admin can borrow and share as well
+2.	Books: users can upload books and give detail description about genre, course, etc
+Each book can only be shared to one person at a time. Needs an unique identifier like ISBN
+Assume that the user is correct in entering books.  
+3.	The person sharing the book should specify how long they are willing to borrow, and it should be free.
+4.	The person borrowing will borrow for the whole duration of the time frame specified by the book owner (For now, more flexibility can be implemented later)
+5.	After the person returns the book, he can rate the book and add comments which will be added to the book¡¯s profile (rating the user)
+6.	The borrower and the owner can rate their respective owner/borrow after each borrow, leaving comments to be shown in the user¡¯s profile.
+7.	Book search can be done based on book name, course code, etc (TBD)
+8.	For social networking feature, each user will have an inbox that stores the messages they receive, and they can reply to these messages.  
+	We can also flag inboxes for a wrong book entry/bad user or whatever, and the admin will be able to look at the flagged messages.  The admin can only look at regular messages
+9.	The admin can delete / edit book entries, this will notify the owner of the book.  
