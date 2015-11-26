@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <link rel="stylesheet" type="text/css" href="../css/footer.css">
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+
+        <p>
+        Your user type is <%= user.type %> <br>
+        Your username is <%= user.username %> <br>
+        Your email is: <%= user.local.email %> <br>
+        Your password is: <%= user.local.password %>
+        </p>
+
+        <% include ./partials/footer.ejs %>
+    </body>
+</html>

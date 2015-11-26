@@ -1,3 +1,10 @@
 #emProvide {
 	color:rgb(128, 0, 0)
 }
+
+.jumbotron {
+    /* add bootstrap jumbotron background image */
+    background: url("../img/jumbotron.jpg");
+    /* change bootstrap jumbotron text color */
+    color: #FFF;
+}
