@@ -20,6 +20,31 @@ module.exports=function(app, passport){
 		res.render("about-us.ejs", data);
 	});
 
+    app.get("/monitor-users.html", function(req, res){
+        //Only admin can monitor users
+        if (req.isAuthenticated() && req.user.userType == "admin"){
+            var data = getData(req);
+            res.render("monitor-users.ejs", data);
+        }else{
+            res.redirect("/");
+        }
+    });
+
+    app.get("/post-a-book.html", function(req, res){
+        //Only user can post a book
+        if (req.isAuthenticated() && req.user.userType == "user"){
+            var data = getData(req);
+            res.render("post-a-book.ejs", data);
+        }else{
+            res.redirect('/');
+        }
+    });
+
+    app.get("/home.html", function(req, res){
+        var data = getData(req);
+        res.render("home.ejs", data);
+    });
+
 	app.get("/login.html", function(req, res){
         //If a user is currently logged in, there is no reason to login again
         //redirect to profile page
@@ -57,9 +82,24 @@ module.exports=function(app, passport){
     });
 
 	app.get('/users/:id/profile.html', isLoggedIn, function(req, res) {
-        var data = getData(req);
-        console.log(req.query);
-        res.render('profile.ejs', data);
+        if (req.user.id == req.params.id){
+            var data = getData(req);
+            res.render('profile.ejs', data);        
+        }else{
+            User.findById(req.params.id, function(err, user) {
+                    // if there are any errors, return the error before anything else
+                    if (err)
+                        res.send(err);
+
+                    // if no user is found, return a message
+                    if (!user)
+                        res.json({message: "user with id not found"});
+
+                    res.render("profile.ejs", {authenticated:"true", user:user});
+                    
+                }
+            );
+        }
     });
 
 

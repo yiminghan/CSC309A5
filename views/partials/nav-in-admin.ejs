@@ -1,4 +1,4 @@
-<!--The template for navigation bar when an admin is logged out -->
+<!--The template for navigation bar when a user is logged in -->
 <div class="page-header">
     <div class="container" >
         <h1 class="text-center">TRental</h1>
@@ -6,8 +6,18 @@
             <li id="navHome" role="presentation"><a href="/home.html">Home</a></li>
             <li id="navAboutUs" role="presentation"><a href="/about-us.html">About Us</a></li>
             <li id="navSearchBooks" role="presentation"><a href="/search-books.html">Search Books</a></li>
+            <li id="navMonitorUsers" role="presentation"><a href="/monitor-users.html">Monitor Users</a></li>
+
+            <li id="navMyAccount" role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    My Account <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li id="navMyProfile" role="presentation"><a href="/profile.html">My profile</a></li>
+                </ul>
+            </li>
+            
             <li id="navLogout" role="presentation"><a href="/logout">Log Out</a></li>
-            <li id="navProfile" role="presentation"><a href="/profile.html">Admin Profile</a></li>
         </ul>
     </div>
 </div>
@@ -30,6 +40,10 @@
         $("#navLogout").attr("class", "active");
     }
     if (filename == "profile.html"){
-        $("#navProfile").attr("class", "active");
+        $("#navMyAccount").attr("class", "active");
+        $("#navMyProfile").attr("class", "bg-success");
+    }
+    if (filename == "monitor-users.html"){
+        $("#navMonitorUsers").attr("class", "active");
     }
 </script>

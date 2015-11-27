@@ -6,8 +6,18 @@
             <li id="navHome" role="presentation"><a href="/home.html">Home</a></li>
             <li id="navAboutUs" role="presentation"><a href="/about-us.html">About Us</a></li>
             <li id="navSearchBooks" role="presentation"><a href="/search-books.html">Search Books</a></li>
+
+            <li id="navMyAccount" role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    My Account <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li id="navMyProfile" role="presentation"><a href="/profile.html">My profile</a></li>
+                    <li id="navPostABook" role="presentation"><a href="/post-a-book.html">Post a Book</a></li>
+                </ul>
+            </li>
+
             <li id="navLogout" role="presentation"><a href="/logout">Log Out</a></li>
-            <li id="navProfile" role="presentation"><a href="/profile.html">Profile</a></li>
         </ul>
     </div>
 </div>
@@ -30,6 +40,11 @@
         $("#navLogout").attr("class", "active");
     }
     if (filename == "profile.html"){
-        $("#navProfile").attr("class", "active");
+        $("#navMyAccount").attr("class", "active");
+        $("#navMyProfile").attr("class", "bg-success");
+    }
+    if (filename == "post-a-book.html"){
+        $("#navMyAccount").attr("class", "active");
+        $("#navPostABook").attr("class", "bg-success");
     }
 </script>
