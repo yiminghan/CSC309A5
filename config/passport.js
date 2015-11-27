@@ -1,7 +1,12 @@
 var LocalStrategy = require('passport-local').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+// load the auth variables
+var configAuth = require('./auth');
 
 // load up the user model
 var User = require('../models/user');
+
+
 
 
 module.exports = function(passport) {
@@ -88,9 +93,9 @@ module.exports = function(passport) {
                         //See how many users there are in the database to determine if this is the first user
                         User.count({}, function(err, count){
                             //The first user is admin
-                            var type="user";
+                            var userType="user";
                             if (count == 0){
-                                type="admin"
+                                userType="admin"
                             }
 
                             // find a user whose email is the same as the forms email
@@ -107,9 +112,10 @@ module.exports = function(passport) {
                                     // if there is no user with that email
                                     // create the user
                                     var newUser = new User();
-                                    newUser.type=type;
-                                    newUser.username=req.body.username;
+                                    newUser.accountType="local";
+                                    newUser.userType=userType;
                                     // set the user's local credentials
+                                    newUser.local.username=req.body.username;
                                     newUser.local.email    = email;
                                     newUser.local.password = password;
 
@@ -131,5 +137,60 @@ module.exports = function(passport) {
             }
         )
     );
+
+
+    passport.use(new GoogleStrategy({
+
+        clientID        : configAuth.googleAuth.clientID,
+        clientSecret    : configAuth.googleAuth.clientSecret,
+        callbackURL     : configAuth.googleAuth.callbackURL,
+
+    },
+    function(token, refreshToken, profile, done) {
+
+        // make the code asynchronous
+        // User.findOne won't fire until we have all our data back from Google
+        process.nextTick(function() {
+
+            //See how many users there are in the database to determine if this is the first user
+            User.count({}, function(err, count){
+                //The first user is admin
+                var userType="user";
+                if (count == 0){
+                    userType="admin"
+                }
+                // try to find the user based on their google id
+                User.findOne({ 'google.id' : profile.id }, function(err, user) {
+                    if (err)
+                        return done(err);
+
+                    if (user) {
+
+                        // if a user is found, log them in
+                        return done(null, user);
+                    } else {
+                        // if the user isnt in our database, create a new user
+                        var newUser          = new User();
+                        newUser.accountType="google";
+                        newUser.userType=userType;
+
+                        // set all of the relevant information
+                        newUser.google.id    = profile.id;
+                        newUser.google.token = token;
+                        newUser.google.name  = profile.displayName;
+                        newUser.google.email = profile.emails[0].value; // pull the first email
+
+                        // save the user
+                        newUser.save(function(err) {
+                            if (err)
+                                throw err;
+                            return done(null, newUser);
+                        });
+                    }
+                });
+            });
+        });
+
+    }));
 
 };

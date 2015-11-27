@@ -52,8 +52,13 @@ module.exports=function(app, passport){
 		res.render("search-books.ejs", data);
 	});
 
-	app.get('/profile.html', isLoggedIn, function(req, res) {
+    app.get('/profile.html', isLoggedIn, function(req, res){
+        return res.redirect('/users/' + req.user.id + "/profile.html");
+    });
+
+	app.get('/users/:id/profile.html', isLoggedIn, function(req, res) {
         var data = getData(req);
+        console.log(req.query);
         res.render('profile.ejs', data);
     });
 
@@ -78,6 +83,27 @@ module.exports=function(app, passport){
         failureRedirect : '/signup.html', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
+
+
+     // =====================================
+    // GOOGLE ROUTES =======================
+    // =====================================
+    // send to google to do the authentication
+    // profile gets us their basic information including their name
+    // email gets their emails
+    app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+    // the callback after google has authenticated the user
+    app.get('/auth/google/callback',
+        passport.authenticate('google', {
+                successRedirect : '/profile.html',
+                failureRedirect : '/'
+        })
+    );
+
+
+
+
 }
 
 

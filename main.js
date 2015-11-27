@@ -13,6 +13,7 @@ mongoose.connect('mongodb://127.0.0.1/A5');
 //Configure some passport settings
 require('./config/passport')(passport);
 
+//The order of these lines matter, do not modify
 var app=express();
 app.use(morgan("dev"));
 app.use(cookieParser());
@@ -22,6 +23,7 @@ app.use(session({secret:"mysecret", resave: false, saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+require("./routes/RESTful_APIs.js")(app);
 require("./routes/route.js")(app, passport);
 
 //YiMing's book API

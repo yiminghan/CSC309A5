@@ -2,11 +2,21 @@ var mongoose = require('mongoose');
 
 // define the schema for our user model
 var userSchema = mongoose.Schema({
-    username: String,
-    type: String, //This field is either "admin" or "user"
+	
+	accountType: String, //This field is either "local" or "google"
+    userType: String, //This field is either "admin" or "user"
+        
     local:{
-        email        : String,  //This field should be unique to each user
+	    username:String,
+        email        : String,  //This field should be unique to each local user
         password     : String,
+    },
+
+    google:{
+    	id           : String, //This field should be unique to each google user
+        token        : String,
+        email        : String,
+        name         : String
     }
 });
 
@@ -14,6 +24,11 @@ var userSchema = mongoose.Schema({
 
 // checking if password is valid
 userSchema.methods.validPassword = function(password) {
+    return this.local.password == password;
+};
+
+// generate a unique id
+userSchema.methods.generateID = function() {
     return this.local.password == password;
 };
 
