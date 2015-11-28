@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+
+        <div class="container text-center">
+            <div class="jumbotron" style="background-color:purplelight">
+                <h2>TRental is the number #1 textbook rental sites in Canada</h1>
+                <p style="color:rgb(255, 230, 204)">Over 1000 students uses our system to save money every year. What are you waiting for? Lets get started! </p>
+                <a class="btn btn-success btn-lg" href="signup.html" role="button">Sign Up</a>
+                <a class="btn btn-success btn-lg" href="login.html" role="button">Log In</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <h1 class="text-center">What do we <em id="emProvide">provide</em>?</h1>
+            <div class="row">
+                <div class="col-sm-4">
+                    <h3>Efficiency</h3>
+                    <p>With TRental, you can find books you want to rent quickly, for low costs.</p>
+                </div>
+                <div class="col-sm-4">
+                    <h3>Variety</h3>
+                    <p>TRental contains a database of textbooks provided by students all over the world. 
+                    We have textbooks in various study fields including Chemistry, Physics, and Computer Science.
+                    </p>
+                </div>
+                <div class="col-sm-4">
+                    <h3>Satisfiability</h3>
+                    <p>With TRental's book rating system, users are guaranteed to find a textbook that is not only useful, but enjoyable as well!</p>
+                </div>
+            </div>
+        </div>
+
+        <% include ./partials/footer.ejs %>
+    </body>
+</html>

@@ -1,0 +1,12 @@
+
+<!-- Update navigation bar accordingly depending on whether a user is currently logged in,
+and whether that user is an admin -->
+<% if (authenticated == "true"){ %>
+    <% if (user.userType == "admin"){ %>
+        <% include ./nav-in-admin.ejs %>
+    <% }else{ %>
+        <% include ./nav-in-user.ejs %>
+    <% } %>
+<% }else{ %>
+    <% include ./nav-out.ejs %>
+<% } %>   
