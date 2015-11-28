@@ -27,7 +27,8 @@ require("./routes/RESTful_APIs.js")(app);
 require("./routes/route.js")(app, passport);
 
 //YiMing's book API
-// app.use('/books', books);
+var books = require('./routes/books');
+app.use('/books', books);
 
 //Serves the static files (css, image, and javascript file)
 //The HTMLs are not static

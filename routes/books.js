@@ -6,57 +6,59 @@ var express = require('express'),
 
 router.route('/')
     .post(function(req, res, next) {
-	//TODO: find out if the user logged in or not
-	var form = new multiparty.Form();
-	form.parse(req, function(err, fields, files){
-	    var name = fields.name;
-	    var subject = fields.subject;
-	    var ISBN = fields.ISBN;
-	    var postingtitle = fields.postingName;
-	    var description = "no description yet by this person";
-	    if(fields.description){ description = fields.description;}
-	    var rating = 10 //Default rating of 10/10
-	    var data = {authenticated: "false"};
-	    if(req.isAuthenticated()){
-		data = {authenticated: "true", user : req.user};
-	    }
-	    var ownerId = data.user._id  ;
-	  
-	    if(data.authenticated == "false"){
-		res.json({success: 0});}
-	    else if(data.authenticated == "true"){
-		mongoose.model('Books').find({ISBN : ISBN}, function (err, results) {
-
-		    mongoose.model('Postings').create({
-			ISBN : ISBN,
-			owner : ownerID,
-			description : description,
-			postingname : postingtitle
-		    }, function ( err, posting){
-			if (err) {
-			    res.send("There was a problem adding the information to the databse.");
-			} else{
-			    var Tbook = results; //empty temp object to hold the new book object.
-			    if (!results.length){ //Creates a new book object
-				mongoose.model('Books').create({
-				    title: name,
-				    description: description,
-				    course: subject,
-				    ISBN: ISBN,
-				    ratecount  : 1, //Start with one to avoid divide by 0
-				    rating: rating} , function (err, book) {
-					if(err){
-					    res.send("There was a problem adding the information to the databse.");
-					} else {
-					    Tbook = book;}
-				    });
+	var data = {authenticated : "false"};
+	if (req.isAuthenticated()) {
+	    data = {authenticated : "true", user: req.user};
+	    
+	    var form = new multiparty.Form();
+	    form.parse(req, function(err, fields, files){
+		var name = fields.name;
+		var subject = fields.subject;
+		var ISBN = fields.ISBN;
+		var postingtitle = fields.postingName;
+		var description = "no description yet by this person";
+		if(fields.description){ description = fields.description;}
+		var rating = 10 //Default rating of 10/10
+		var ownerId = data.user._id  ;
+		
+		if(data.authenticated == "false"){
+		    res.json({success: 0});}
+		else if(data.authenticated == "true"){
+		    mongoose.model('Books').find({ISBN : ISBN}, function (err, results) {
+			
+			mongoose.model('Postings').create({
+			    ISBN : ISBN,
+			    owner : ownerID,
+			    description : description,
+			    postingname : postingtitle
+			}, function ( err, posting){
+			    if (err) {
+				res.send("There was a problem adding the information to the databse.");
+			    } else{
+				var Tbook = results; //empty temp object to hold the new book object.
+				if (!results.length){ //Creates a new book object
+				    mongoose.model('Books').create({
+					title: name,
+					description: description,
+					course: subject,
+					ISBN: ISBN,
+					ratecount  : 1, //Start with one to avoid divide by 0
+					rating: rating} , function (err, book) {
+					    if(err){
+						res.send("There was a problem adding the information to the databse.");
+					    } else {
+						Tbook = book;}
+					});
+				}
+				res.json({success: 1, posting : posting, book: Tbook});			 
 			    }
-			    res.send({posting : posting, book: Tbook});			 
-			}
+			});
 		    });
-		});
-	    }
-	});
+		}
+	    });
+	} else {
+	    res.json({success : 0, message : "login failed"});
+	}
     })
 		    
     .get(function(req,res,next) {
