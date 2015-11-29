@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+        <div id="profileEdit" >
+	        <div class="container">
+	        	<h2>Create a posting</h2>
+	        	<div class="row">
+	        		<div class="col-xs-12 col-sm-4">
+	        			<div style="height:200px;">
+	        				<img id="imgProfile" src="http://courses.educ.ubc.ca/etec540/May08/goslina/researchtopic/101-books-stack_color.jpg" style="height:100%;">
+	        			</div>
+	        		</div>
+	        		<div class="col-xs-12 col-sm-8">
+	        			<form id="form" method="post" action="/create-posting">
+	        				<div class="form-group">
+	        					<label >Posting Title</label>
+	        					<input id="inputPostingTitle" name="postingTitle" type="text" maxlength="50" class="form-control">
+	        				</div>
+	        				<div class="form-group">
+	        					<label>Book ISBN</label>
+	        					<input id="inputISBN" name="ISBN" type="text" class="form-control">
+	        				</div>
+	        				<div class="form-group">
+	        					<label>Book Title</label>
+	        					<input id="inputBookTitle" name="bookTitle" type="text" class="form-control">
+	        				</div>
+	        				<div class="form-group">
+	        					<label>Book Authors</label>
+	        					<input id="inputBookAuthors" name="authors" type="text" class="form-control">
+	        				</div>
+	        				<div class="form-group">
+	        					<label>Price</label>
+	        					<input id="inputPrice" name="price" type="number" class="form-control">
+	        				</div>
+	        				<div class="form-group">
+								<label class="control-label">Description</label>
+								<textarea id="inputDescription" name="description" class="form-control" rows="3"
+									></textarea>
+							</div>
+	        				<div class="form-group">
+	        					<label> Field</label>
+	        					<select id="inputField" name="field" class="form-control" id="inputProfilePic">
+	        						<option value="Comp Sci">Comp Sci</option>
+	        						<option value="Biology">Biology</option>
+	        						<option value="Chemistry">Chemistry</option>
+	        						<option value="Physic">Physic</option>
+	        						<option value="Mathematic">Mathematic</option>
+	        					</select>
+	        				</div>
+
+	        				<button class="btn btn-primary" type="submit">Create posting</button>
+		    	    		<br/>
+	        			</form>
+	        			<div id= "alertMessage" class="alert alert-danger" style="display:none">
+	        				Some of your input fields are empty!
+	        			</div>
+
+	        		</div>
+	        	</div>
+	        </div>
+	    </div>
+
+        <% include ./partials/footer.ejs %>
+        <script type="text/javascript">
+        	$("#form").submit(function(event){
+        		var field = $( "#inputField").val();
+	        	var ISBN = $("#inputISBN").val();
+	        	var description = $( "#inputDescription" ).val();
+	        	var bookTitle = $( "#inputBookTitle" ).val();
+	        	var bookAuthors = $( "#inputBookAuthors" ).val();
+	        	var price = $( "#inputPrice" ).val();
+	        	var postingTitle = $( "#inputPostingTitle" ).val();
+        		
+        		if ( field == "" || ISBN == "" || description == "" || bookTitle == "" ||
+        			bookAuthors == "" || price == "" || postingTitle == ""){
+        			event.preventDefault();
+        			$("#alertMessage").css("display", "block");
+        		}
+        	});
+        	
+
+        	function log(){
+        		console.log($( "#inputField").val());
+        		console.log($("#inputISBN").val());
+        		console.log($( "#inputDescription" ).val());
+        		console.log($( "#inputBookAuthors" ).val());
+        		console.log($( "#inputBookTitle" ).val());
+        		console.log($( "#inputPrice" ).val());
+        		console.log($( "#inputPostingTitle" ).val());
+
+        	}
+        </script>
+    </body>
+</html>

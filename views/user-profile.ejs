@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+
+        <div class="container">
+            <div class="well" style="max-width:700px;margin:auto">
+                <div class="row">
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="text-center">
+                            <img src="http://lorempixel.com/200/200/people/9/" class="avatar img-circle img-thumbnail" alt="avatar">
+                        </div>
+
+                    </div>
+                    <div class="col-md-8 col-sm-6 col-xs-12 text-center">
+                        <% if(selectedUser.userType == "admin"){ %>
+                            <span class="label label-danger">Admin</span>
+                        <% } %>
+                        <% if(selectedUser.accountType=="google"){ %>
+                            <h1><%= selectedUser.google.name %></h1>
+                            <p><em><%= selectedUser.description %></em></p>
+                            <span><i class="fa fa-envelope"> <%= selectedUser.google.email %></i></span>
+                            <br>
+                            <span class="glyphicon glyphicon-phone-alt"> <%= selectedUser.phone %></span>
+                            <hr/>
+                            <small><i class="fa fa-google"> This user is using a Google</i> account</small>
+                            <br>
+                            <small>This user's ID is <em> <%= selectedUser.id %></em></small>
+                            <br>
+                        <% }else{ %>
+                            <h1><%= selectedUser.local.username %></h1>
+                            <p><em><%= selectedUser.description %></em></p>
+                            <span><i class="fa fa-envelope"> <%= selectedUser.local.email %></i></span>
+                            <br>
+                            <span class="glyphicon glyphicon-phone-alt"> <%= selectedUser.phone %></span>
+                            <hr/>
+                            <small>This user's ID is <em> <%= selectedUser.id %></em></small>
+                            <br>
+                        <% } %>
+
+                        <a class="btn btn-primary" href="#"><i class="fa fa-inbox"> Inbox</i></a>
+                        <% if(user.userType == "admin"){ %>
+                            <a class="btn btn-primary" href="/users/<%= selectedUser.id %>/remove"><i class="fa fa-trash"> Remove</i></a>
+                        <% } %>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% include ./partials/footer.ejs %>
+    </body>
+</html>

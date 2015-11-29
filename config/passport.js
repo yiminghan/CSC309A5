@@ -114,6 +114,10 @@ module.exports = function(passport) {
                                     var newUser = new User();
                                     newUser.accountType="local";
                                     newUser.userType=userType;
+
+                                    //default field
+                                    newUser.description = "no description";
+                                    newUser.phone = "N/A";
                                     // set the user's local credentials
                                     newUser.local.username=req.body.username;
                                     newUser.local.email    = email;
@@ -174,6 +178,9 @@ module.exports = function(passport) {
                         newUser.accountType="google";
                         newUser.userType=userType;
 
+                        //default fields
+                        newUser.description = "no description";
+                        newUser.phone = "N/A";
                         // set all of the relevant information
                         newUser.google.id    = profile.id;
                         newUser.google.token = token;

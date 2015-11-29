@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+    </head>
+    <body>
+        <span id="postingID" style="display:none"><%= posting.id %></span>
+
+        <% include ./partials/handle-nav.ejs %>
+
+        <div class="container">
+            <div class="well">
+                <div style="max-width:700px;margin:auto">
+                    <div class="text-center">
+                        <% if(posting.availability == "false"){ %>
+                            <span id="unavailableLabel" class="label label-danger">Book Unavailable</span>
+                            <span id="availableLabel" style="display:none" class="label label-success">Book Available</span>
+                        <% }else{ %>
+                            <span id="unavailableLabel" style="display:none" class="label label-danger">Book Unavailable</span>
+                            <span id="availableLabel" class="label label-success">Book Available</span>
+                        <% } %>
+                     
+                        <h1><%= posting.postingTitle %></h1>
+                        <h3> <%= posting.bookTitle %> </h3>
+                        <p><em>By <%= posting.authors %></em></p>               
+                    </div>
+                    <div>
+                        <dl class="dl-horizontal">
+                            <dt>Description</dt>
+                            <dd><%= posting.description %></dd>
+                            <dt>Price</dt>
+                            <dd>$<%= posting.price %></dd>
+                            <dt>Field</dt>
+                            <dd><%= posting.field %></dd>
+                            <dt><i class="fa fa-barcode"></i> ISBN</dt>
+                            <dd><%= posting.ISBN%></dd>
+                            <dt><i class="fa fa-user"></i> Owner</dt>
+                            <dd><%= posting.ownerName %></dd>
+                        </dl>
+                        <hr/>
+                        <div class="text-center">
+                            <a class="btn btn-danger" href="/users/<%=user.id %>/postings/<%=posting.id %>/delete"> Remove posting</a>
+                            <% if(posting.availability == "false"){ %>
+                                <button id="btnMakeAvailable" class="btn btn-success"> Make available</button>
+                                <button id="btnMakeUnavailable" style="display:none" class="btn btn-danger"> Make unavailable</button>
+                            <% }else{ %>
+                               <button id="btnMakeAvailable" style="display:none" class="btn btn-success"> Make available</button>
+                                <button id="btnMakeUnavailable"  class="btn btn-danger"> Make unavailable</button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h2>Recommendations</h2>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Other <%= posting.field%> books you may like</h2>
+                        </div>
+                        <div class="panel-body">
+                            <% if(recommendations.length == 0){ %>
+                                <em class="bg-warning">None</em>
+                            <% }else{ %>
+                                <% for(var i = 0; i < recommendations.length; i++){ %>
+                                    <h6><a href="/postings/<%= recommendations[i].id %>/details.html %>">
+                                        <%= recommendations[i].postingTitle %>
+                                    </a><h6>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h2>Comments and Ratings</h2>
+                    <ul class="list-group" id="ratingSection">
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <script type="text/javascript">
+            $("#btnMakeAvailable").click(function(){
+                $.ajax({
+                    type: "PUT",
+                    url:"/api/postings/"+$("#postingID").text(),
+                    data: {
+                        availability: "true"
+                    },
+                    success: function(data){
+                        $("#availableLabel").css("display","initial");
+                        $("#unavailableLabel").css("display","none");
+
+                        $("#btnMakeUnavailable").css("display","initial");
+                        $("#btnMakeAvailable").css("display","none");
+                    }
+                })
+            });
+
+            $("#btnMakeUnavailable").click(function(){
+                $.ajax({
+                    type: "PUT",
+                    url:"/api/postings/"+$("#postingID").text(),
+                    data: {
+                        availability: "false"
+                    },
+                    success: function(data){
+                         $("#unavailableLabel").css("display","initial");
+                         $("#availableLabel").css("display","none");
+
+                         $("#btnMakeUnavailable").css("display","none");
+                        $("#btnMakeAvailable").css("display","initial");
+                    }
+                })
+            });
+
+        </script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                getRatings();
+                setInterval(getRatings, 2000);
+            });
+
+            function getRatings(){
+                $.get("/api/postings/" + $("#postingID").text() + "/ratings", function(ratings){
+                    $("#ratingSection").empty();
+                    if(ratings.length == 0){
+                        $("#ratingSection").append("<p class='bg-warning'><em>None</em></p>");
+                    }
+                    for (var i = 0; i<ratings.length; i ++){
+                        $("#ratingSection").append(
+                            "<li class='list-group-item'>"
+                            + "<h4> "+ ratings[i].header + "</h4>" +
+                            "<p><em>Rating:" + ratings[i].rating + "/5</em><br>" + 
+                                ratings[i].comment +
+                            "</p>" +
+                            "</li>");
+                    }
+                });
+            }
+        </script>
+        <% include ./partials/footer.ejs %>
+    </body>
+</html>

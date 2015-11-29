@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+
+        <!-- datatable dependencies -->
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script> 
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+
+        <div class="container">
+	        <table id="table" class="table table-bordered" cellspacing="0" width="100%">
+	        	<thead>
+		            <tr>
+		                <th>Posting Title</th>
+		                <th>Book Title</th>
+		                <th>Rent Price</th>
+		                <th>ISBN</th>
+		                <th>Owner</th>
+		            </tr>
+	      		</thead>
+		        <tfoot>
+		            <tr>
+		                <th>Posting Title</th>
+		                <th>Book Title</th>
+		                <th>Rent Price</th>
+		                <th>ISBN</th>
+		                <th>Owner</th>
+		            </tr>
+		        </tfoot>
+		        <tbody>
+		        	<% for(var i =0; i < postingList.length; i ++) { %>
+		        		<tr 
+		        			<% if(postingList[i].availability == "false"){ %>
+		        				class="bg-danger"
+		        			<% } %>
+		        			<% if(postingList[i].availability == "true"){ %>
+		        				class="bg-success"
+		        			<% } %>
+		        		>
+		        			<td> 
+		        				<a href="/postings/<%= postingList[i].id %>/details.html">
+			        				<%= postingList[i].postingTitle  %>
+		        				</a>
+		        			</td>
+		        			<td>
+		        				<%= postingList[i].bookTitle  %>
+	 	        			</td>
+		        			<td>
+		        				$<%= postingList[i].price  %>
+		        			</td>
+		        			<td>
+		        				<%= postingList[i].ISBN  %>
+		        			</td>
+		        			<td>
+		        				<%= postingList[i].ownerName  %>
+		        			</td>
+		        		</tr>
+		        	<% } %>
+		        </tbody>
+	        </table>
+        </div>
+
+        <script type="text/javascript">
+	    	$(document).ready(function() {
+			    $('#table').DataTable();
+			});
+		</script>
+
+
+        <% include ./partials/footer.ejs %>
+    </body>
+</html>

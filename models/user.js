@@ -5,6 +5,8 @@ var userSchema = mongoose.Schema({
 	
 	accountType: String, //This field is either "local" or "google"
     userType: String, //This field is either "admin" or "user"
+    description: String,
+    phone: String,
         
     local:{
 	    username:String,
