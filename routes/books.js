@@ -12,10 +12,13 @@ router.route('/')
 	    
 	    var form = new multiparty.Form();
 	    form.parse(req, function(err, fields, files){
-		var name = fields.name;
+		var name = fields.bookTitle;
 		var subject = fields.subject;
 		var ISBN = fields.ISBN;
+		var ownerName = fields.ownerName;
 		var postingtitle = fields.postingName;
+		var authors = fields.authors;
+		var price = fields.price;
 		var description = "no description yet by this person";
 		if(fields.description){ description = fields.description;}
 		var rating = 10 //Default rating of 10/10
@@ -28,9 +31,16 @@ router.route('/')
 			
 			mongoose.model('Postings').create({
 			    ISBN : ISBN,
-			    owner : ownerID,
+			    ownerID : ownerID,
+			    ownerName : ownerName,
 			    description : description,
-			    postingname : postingtitle
+			    availability : "True",
+			    price : price,
+			    authors : authors,
+			    bookTitle : name,
+			    price : price,
+			    field: subject,
+			    postingTitle : postingtitle
 			}, function ( err, posting){
 			    if (err) {
 				res.send("There was a problem adding the information to the databse.");
@@ -39,8 +49,7 @@ router.route('/')
 				if (!results.length){ //Creates a new book object
 				    mongoose.model('Books').create({
 					title: name,
-					description: description,
-					course: subject,
+					authors: authors,
 					ISBN: ISBN,
 					ratecount  : 1, //Start with one to avoid divide by 0
 					rating: rating} , function (err, book) {
@@ -74,6 +83,9 @@ router.route('/')
 	    res.json({success : 0, message : "login failed"});
 	}
     });
+
+
+
 
 //Search book by subject
 router.route('/subject/:subject')
@@ -116,7 +128,7 @@ router.route('/edit/:id')
 		 
 			 var form = new multiparty.Form();
 			 form.parse(req, function(err, fields, files){
-		     mongoose.model('Books').findById(req.param('id'),function (err, book) {
+			     mongoose.model('Books').findById(req.param('id'),function (err, book) {
 			 if (!book.length) {
 			     res.json({success : 0, message : "No such book found"});
 			 } else {
@@ -136,6 +148,13 @@ router.route('/edit/:id')
 				     var newRating;
 				     if(fields.rating != undefined){
 					 var comment = fields.comment;
+					 var heading = fields.heading;
+					 var raterName;
+					 if (data.user.accountType == "local") {
+					     raterName = data.user.local.username;}
+					 else {raterName = data.user.google.name;}
+					 var postingID = fields.postingID;
+					 //TODO: restrict the posting owner to rate on his own post
 					 if (!results.length) {
 					     mongoose.model('Rating').create({
 						 ISBN : book.ISBN,
