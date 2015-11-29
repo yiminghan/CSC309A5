@@ -6,38 +6,166 @@
         <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
     </head>
     <body>
+        <span id="postingID" style="display:none"><%= posting.id %></span>
+        <span id="raterID" style="display:none"><%= user.id %></span>
+        <span id="raterName" style="display:none">
+            <% if(user.accountType == "google"){ %>
+                <%= user.google.name %>
+            <% }else { %>
+                <%= user.local.username %>
+            <% } %>
+        </span>
         <% include ./partials/handle-nav.ejs %>
 
         <div class="container">
-            <div class="well" style="max-width:700px;margin:auto">
-                <div class="text-center">
-                        <% if(posting.availability == "false"){ %>
-                            <span class="label label-danger">Book Unavailable</span>
-                        <% }else{ %>
-                            <span class="label label-success">Book Available</span>
-                        <% } %>
-                 
-                            <h1><%= posting.postingTitle %></h1>
-                            <h3> <%= posting.bookTitle %> </h3>
-                            <p><em>By <%= posting.authors %></em></p>               
-                </div>
-                <div>
-                    <p>Description: <%= posting.description %></p>
-                    <span>Price: $<%= posting.price %></span>
-                    <br>
-                    <span>Field: <%= posting.field %></span>
-                    <br>
-                    <span><i class="fa fa-user"></i> 
-                        <a href="/users/<%= posting.ownerID %>/profile.html">Owner: <%= posting.ownerName %></a>
-                    </span>
-                    <hr/>
-                    <% if(user.userType == "admin"){ %>
-                        <a class="btn btn-danger" href="/postings/<%= posting.id %>/delete"> Remove posting</a>
-                    <% } %>
+            <div class="well" >
+                <div style="max-width:700px;margin:auto">
+                    <div class="text-center">
+                            <% if(posting.availability == "false"){ %>
+                                <span class="label label-danger">Book Unavailable</span>
+                            <% }else{ %>
+                                <span class="label label-success">Book Available</span>
+                            <% } %>
+                     
+                                <h1><%= posting.postingTitle %></h1>
+                                <h3> <%= posting.bookTitle %> </h3>
+                                <p><em>By <%= posting.authors %></em></p>               
+                    </div>
+                    <div>
+                        <dl class="dl-horizontal">
+                            <dt>Description</dt>
+                            <dd><%= posting.description %></dd>
+                            <dt>Price</dt>
+                            <dd>$<%= posting.price %></dd>
+                            <dt>Field</dt>
+                            <dd><%= posting.field %></dd>
+                            <dt><i class="fa fa-barcode"></i> ISBN</dt>
+                            <dd><%= posting.ISBN%></dd>
+                            <dt><i class="fa fa-user"></i> Owner</dt>
+                            <dd><%= posting.ownerName %></dd>
+                        </dl>
+
+                        <hr/>
+                        <div class="text-center">
+                            <% if(user.userType == "admin"){ %>
+                                <a class="btn btn-danger" href="/postings/<%= posting.id %>/delete"> Remove posting</a>
+                            <% } %>
+                            <a class="btn btn-info" href="/users/<%= posting.ownerID %>/profile.html"> Contact Owner</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h2>Recommendations</h2>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Other <%= posting.field%> books you may like</h2>
+                        </div>
+                        <div class="panel-body">
+                            <% if(recommendations.length == 0){ %>
+                                <em class="bg-warning">None</em>
+                            <% }else{ %>
+                                <% for(var i = 0; i < recommendations.length; i++){ %>
+                                    <h6><a href="/postings/<%= recommendations[i].id %>/details.html %>">
+                                        <%= recommendations[i].postingTitle %>
+                                    </a><h6>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h2>Comments and Ratings</h2>
+                    <div class="well">
+                        <h3 class="text-center">Add a comment</h3>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="inputHeading" class="col-sm-2 control-label">Heading</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputHeading" placeholder="Heading">
+                                </div>
+                            </div>
+                            <div class="form-group" >
+                                <label for="inputRating" class="col-sm-2 control-label"> Rating</label>
+                                <div class="col-sm-10">
+                                    <select id="inputRating" class="form-control">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <textarea id="inputComment" class="form-control" rows="3" placeholder="Write your comment here"></textarea>
+                            <div class="text-center" style="margin-top:20px;">
+                                <button id="btnSubmitRating" type="reset" class="btn btn-success">Submit rating</button>
+                            </div>
+
+                            <div id="alertMessage" class="alert alert-danger" role="alert" style="margin-top:20px;display:none">
+                                Please enter all fields!
+                            </div>
+                        </form>
+                    </div>
+
+                    <ul class="list-group" id="ratingSection">
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+
+        <script type="text/javascript">
+            $("#btnSubmitRating").click(function(event){
+                var heading = $("#inputHeading").val();
+                var rating = $("#inputRating").val();
+                var comment = $("#inputComment").val();
+                var raterName =  $.trim($("#raterName").text());
+                var raterID = $("#raterID").text();
+                if (heading == "" || comment == ""){
+                    event.preventDefault();
+                    $("#alertMessage").css("display", "block");
+                }else{
+                    $("#alertMessage").css("display", "none");
+                    $.post("/api/postings/" + $("#postingID").text() + "/ratings", 
+                        {"heading": heading,
+                        "rating": rating,
+                        "comment" :  comment,
+                        "raterName" : raterName,
+                        "raterID": raterID
+                        }
+                    );
+                }
+            });
+
+            $(document).ready(function(){
+                getRatings();
+                setInterval(getRatings, 2000);
+            });
+
+            function getRatings(){
+                $.get("/api/postings/" + $("#postingID").text() + "/ratings", function(ratings){
+                    $("#ratingSection").empty();
+                    if(ratings.length == 0){
+                        $("#ratingSection").append("<p class='bg-warning'><em>None</em></p>");
+                    }
+                    for (var i = 0; i<ratings.length; i ++){
+                        $("#ratingSection").append(
+                            "<li class='list-group-item'>"
+                            + "<h4> "+ ratings[i].heading + "</h4>" +
+                            "<p><em>Rating:" + ratings[i].rating + "/5</em><br>" + 
+                                ratings[i].comment +
+                            "</p>" +
+                            "</li>");
+                    }
+                });
+            }
+        </script>
         <% include ./partials/footer.ejs %>
     </body>
 </html>

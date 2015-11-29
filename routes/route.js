@@ -2,13 +2,11 @@
 var User = require('../models/user');
 var Book = require('../models/book');
 var Posting = require('../models/posting');
+var Rating = require('../models/rating');
+
 
 
 module.exports=function(app, passport){
-    app.use(function(req,res, next){
-        console.log(req.user);
-        next();
-    });
     //These serves the html pages (using EJS templates)
     //These html pages are dynamic, their content depends on whether a user is logged in or not
     //We pass these data on res.render() to modify the content accordingly. 
@@ -45,6 +43,21 @@ module.exports=function(app, passport){
         }
     });
 
+	app.get("/search-postings.html", isLoggedIn, function(req, res){
+        
+        Posting.find({}, function(err, postings){
+            if (err){
+                res.send(err);
+            }
+            var data = getData(req);
+            data.tab = "search-postings";
+            data.postingList = postings;
+    		res.render("posting-list.ejs", data);
+            
+        });
+	});
+
+    
     app.get("/create-posting.html", function(req, res){
         //Only user can post a book
         if (req.isAuthenticated() && req.user.userType == "user"){
@@ -89,35 +102,22 @@ module.exports=function(app, passport){
         }
     });
 
-    // app.get("/postings/:id/set-available", isLoggedIn, function(req, res){
-    //     Posting.findById(req.params.id, function(err, posting){
-    //         posting.availability = "true";
-    //         posting.save(function(err){
-    //             if (err)
-    //                 res.send(err);
-    //             res.redirect("/postings/"+req.params.id+"/details.html");
-    //         });
-    //     });
-
-    // });
-
-    // app.get("/postings/:id/set-unavailable", isLoggedIn, function(req, res){
-    //     Posting.findById(req.params.id, function(err, posting){
-    //         posting.availability = "false";
-    //         posting.save(function(err){
-    //             if (err)
-    //                 res.send(err);
-    //             res.redirect("/postings/"+req.params.id+"/details.html");
-    //         });
-    //     });
-
-    // });
+    app.get("/users/:id/postings.html", isLoggedIn, function(req, res){
+        if (req.params.id == req.user.id){
+            Posting.find({ownerID: req.user.id}, function(err, postings){
+                var data = getData(req);
+                data.postingList = postings;
+                data.tab = "my-postings";
+                res.render("posting-list.ejs", data);
+            });
+        }
+    });
 
     app.get("/users/:uid/postings/:pid/delete", isLoggedIn, function(req, res){
         Posting.remove({_id:req.params.pid}, function(err, posting){
             if (err)
                 res.send(err);
-            res.redirect("/users/"+req.params.uid+"/profile.html");
+            res.redirect("/users/"+req.params.uid+"/postings.html");
         });
     });
 
@@ -134,22 +134,49 @@ module.exports=function(app, passport){
         Posting.findById(req.params.id, function(err, posting){
             if (err)
                 res.send(err);
-            if(posting.ownerID == req.user.id){
-                var data = getData(req);
-                data.posting = posting;
-                data.tab = "my-postings";
-                res.render("my-posting-details.ejs", data);
-            }else{
-                var data = getData(req);
-                data.posting = posting;
-                data.tab = "search-postings";
-                res.render("posting-details.ejs", data);
-            }
+
+            Posting.find({field:posting.field}, function(err, recommendations){
+                if(posting.ownerID == req.user.id){
+                    var data = getData(req);
+                    data.posting = posting;
+                    data.recommendations = recommendations;
+                    data.tab = "my-postings";
+                    res.render("my-posting-details.ejs", data);
+                }else{
+                    var data = getData(req);
+                    data.posting = posting;
+                    data.recommendations = recommendations;
+                    data.tab = "search-postings";
+                    res.render("posting-details.ejs", data);
+                }
+            });
+        });
+    });
+
+    app.get("/postings/:id/make-available", isLoggedIn, function(req, res){
+        Posting.findById(req.params.id, function(err, posting){
+            posting.availability = "true";
+            posting.save(function(err){
+                if (err)
+                    res.send(err);
+                res.redirect('back');
+            });
+        });
+    });
+
+    app.get("/postings/:id/make-unavailable", isLoggedIn, function(req, res){
+        Posting.findById(req.params.id, function(err, posting){
+            posting.availability = "false";
+            posting.save(function(err){
+                if (err)
+                    res.send(err);
+                res.redirect('back');
+            });
         });
     });
 
 
-	app.get("/login.html", function(req, res){
+    app.get("/login.html", function(req, res){
         //If a user is currently logged in, there is no reason to login again
         //redirect to profile page
         if (req.isAuthenticated()){
@@ -159,11 +186,11 @@ module.exports=function(app, passport){
             data.tab = "login";
             //Pass in some message if any, this loginMessage comes from passport.js
             data.loginMessage=req.flash('loginMessage');
-		    res.render("login.ejs", data);  
+            res.render("login.ejs", data);  
         }  
-	});
+    });
 
-	app.get("/signup.html", function(req, res){
+    app.get("/signup.html", function(req, res){
         //If a user is currently logged in, there is no reason to signup
         //One must logged out first before signing up
         //redirect to profile page
@@ -174,34 +201,10 @@ module.exports=function(app, passport){
             data.tab = "signup";
             //Pass in some message if any, this loginMessage comes from passport.js
             data.signupMessage=req.flash('signupMessage');
-		    res.render('signup.ejs', data);
-        }
-	});
-
-	app.get("/search-postings.html", isLoggedIn, function(req, res){
-        
-        Posting.find({}, function(err, postings){
-            if (err){
-                res.send(err);
-            }
-            var data = getData(req);
-            data.tab = "search-postings";
-            data.postingList = postings;
-    		res.render("posting-list.ejs", data);
-            
-        });
-	});
-
-    app.get("/users/:id/postings.html", isLoggedIn, function(req, res){
-        if (req.params.id == req.user.id){
-            Posting.find({ownerID: req.user.id}, function(err, postings){
-                var data = getData(req);
-                data.postingList = postings;
-                data.tab = "create-posting";
-                res.render("posting-list.ejs", data);
-            });
+            res.render('signup.ejs', data);
         }
     });
+
 
     app.get('/my-profile.html', isLoggedIn, function(req, res){
         return res.redirect('/users/' + req.user.id + "/profile.html");
