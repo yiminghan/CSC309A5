@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+
+        <div class="container">
+            <div class="well" style="max-width:700px;margin:auto">
+                <div class="row">
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="text-center">
+                            <img src="http://lorempixel.com/200/200/people/9/" class="avatar img-circle img-thumbnail" alt="avatar">
+                        </div>
+
+                    </div>
+                    <div class="col-md-8 col-sm-6 col-xs-12 text-center">
+                        <% if(user.userType == "admin"){ %>
+                            <span class="label label-danger">Admin</span>
+                        <% } %>
+                        <% if(user.accountType=="google"){ %>
+                            <h1><%= user.google.name %></h1>
+                            <p><em><%= user.description %></em></p>
+                            <span><i class="fa fa-envelope"> <%= user.google.email %></i></span>
+                            <br>
+                            <span class="glyphicon glyphicon-phone-alt"> <%= user.phone %></span>
+                            <hr/>
+                            <small><i class="fa fa-google"> You are using a Google</i> account</small>
+                            <br>
+                            <small>Your ID is <em> <%= user.id %></em></small>
+                            <br>
+                        <% }else{ %>
+                            <h1><%= user.local.username %></h1>
+                            <p><em><%= user.description %></em></p>
+                            <span><i class="fa fa-envelope"> <%= user.local.email %></i></span>
+                            <br>
+                            <span class="glyphicon glyphicon-phone-alt"> <%= user.phone %></span>
+                            <hr/>
+                            <small>Your ID is <em> <%= user.id %></em></small>
+                            <br>
+                        <% } %>
+
+                        <a class="btn btn-primary"
+                            href="/users/<%= user.id %>/edit_profile.html">
+                            <i class="fa fa-wrench"> Edit Profile</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% include ./partials/footer.ejs %>
+    </body>
+</html>

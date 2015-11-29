@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+
+        <div class="container">
+            <div class="well" style="max-width:700px;margin:auto">
+                <div class="text-center">
+                        <% if(posting.availability == "false"){ %>
+                            <span class="label label-danger">Book Unavailable</span>
+                        <% }else{ %>
+                            <span class="label label-success">Book Available</span>
+                        <% } %>
+                 
+                            <h1><%= posting.postingTitle %></h1>
+                            <h3> <%= posting.bookTitle %> </h3>
+                            <p><em>By <%= posting.authors %></em></p>               
+                </div>
+                <div>
+                    <p>Description: <%= posting.description %></p>
+                    <span>Price: $<%= posting.price %></span>
+                    <br>
+                    <span>Field: <%= posting.field %></span>
+                    <br>
+                    <span><i class="fa fa-user"></i> 
+                        <a href="/users/<%= posting.ownerID %>/profile.html">Owner: <%= posting.ownerName %></a>
+                    </span>
+                    <hr/>
+                    <% if(user.userType == "admin"){ %>
+                        <a class="btn btn-danger" href="/postings/<%= posting.id %>/delete"> Remove posting</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <% include ./partials/footer.ejs %>
+    </body>
+</html>

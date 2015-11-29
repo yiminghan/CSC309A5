@@ -1,11 +1,11 @@
 <!--The template for navigation bar when a user is logged out -->
+<span id="selectedTab" style="display:none"><%= tab %></span>
 <div class="page-header">
     <div class="container" >
         <h1 class="text-center">TRental</h1>
         <ul class="nav nav-pills nav-justified">
             <li id="navHome" role="presentation"><a href="/home.html">Home</a></li>
             <li id="navAboutUs" role="presentation"><a href="/about-us.html">About Us</a></li>
-            <li id="navSearchBooks" role="presentation"><a href="/search-books.html">Search Books</a></li>
             <li id="navLogin" role="presentation"><a href="/login.html">Log In</a></li>
             <li id="navSignup" role="presentation"><a href="/signup.html">Sign up</a></li>
         </ul>
@@ -15,21 +15,18 @@
 
 <!--Updates which tab is currently selected -->
 <script type="text/javascript">
-    var url = window.location.pathname;
-    var filename = url.substring(url.lastIndexOf('/')+1);
-    if (filename == "home.html"){
+    var selectedTab = $("#selectedTab").text();
+    console.log(selectedTab);
+    if (selectedTab == "home"){
         $("#navHome").attr("class", "active");
     }
-    if (filename == "about-us.html"){
+    if (selectedTab == "about-us"){
         $("#navAboutUs").attr("class", "active");
     }
-    if (filename == "search-books.html"){
-        $("#navSearchBooks").attr("class", "active");
-    }
-    if (filename == "login.html"){
+    if (selectedTab == "login"){
         $("#navLogin").attr("class", "active");
     }
-    if (filename == "signup.html"){
+    if (selectedTab == "signup"){
         $("#navSignup").attr("class", "active");
     }
 </script>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        
+        <!-- datatable dependencies -->
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script> 
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
+
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+    </head>
+    <body>
+        <% include ./partials/handle-nav.ejs %>
+        <div class="container">
+	        <table id="table" class="table table-bordered" cellspacing="0" width="100%">
+	        	<thead>
+		            <tr>
+		                <th>Username</th>
+		                <th>Email</th>
+		                <th>Account Type</th>
+		                <th>User Type</th>
+		            </tr>
+	      		</thead>
+		        <tfoot>
+		            <tr>
+		                <th>Username</th>
+		                <th>Email</th>
+		                <th>Account Type</th>
+		                <th>User Type</th>
+		            </tr>
+		        </tfoot>
+		        <tbody>
+		        	<% for(var i =0; i < userList.length; i ++) { %>
+		        		<tr 
+		        			<% if(userList[i].userType == "admin"){ %>
+		        				class="bg-danger"
+		        			<% } %>
+		        			<% if(userList[i].id == user.id){ %>
+		        				class="bg-success"
+		        			<% } %>
+		        		>
+		        			<td> 
+		        				<a href="/users/<%= userList[i].id %>/profile.html">
+			        				<% if(userList[i].accountType == "google"){ %>
+			        					<%= userList[i].google.name %>	
+			        				<% }else{ %>
+			        					<%= userList[i].local.username %>
+			        				<% } %>
+		        				</a>
+		        			</td>
+		        			<td>
+		        				<% if(userList[i].accountType == "google"){ %>
+		        					<%= userList[i].google.email %>	
+		        				<% }else{ %>
+		        					<%= userList[i].local.email %>
+		        				<% } %>
+	 	        			</td>
+		        			<td>
+		        				<%= userList[i].accountType %>
+		        			</td>
+		        			<td>
+		        				<%= userList[i].userType %>
+		        			</td>
+		        		</tr>
+		        	<% } %>
+		        </tbody>
+	        </table>
+        </div>
+
+        <% include ./partials/footer.ejs %>
+    
+        <script type="text/javascript">
+	    	$(document).ready(function() {
+			    $('#table').DataTable();
+			});
+		</script>
+    </body>
+</html>

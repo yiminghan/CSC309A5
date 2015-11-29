@@ -8,82 +8,95 @@
     <body>
         <% include ./partials/handle-nav.ejs %>
 
-        <div class="row">
-			<div class="col-xs-2"></div>
+		<div class="container">
+		<h2 class="text-center">Edit Profile</h1>
+			<div class="row">
+				<!-- left column -->
+				<div class="col-md-4 col-sm-6 col-xs-12">
+					<div class="text-center">
+						<img src="http://lorempixel.com/200/200/people/9/" class="avatar img-circle img-thumbnail" alt="avatar">
+						<h6>Upload a different photo...</h6>
+						<input type="file" class="text-center center-block well well-sm">
+					</div>
+				</div>
 
-			<div class="col-xs-1">
-				<img src="avatar-blank.jpg" alt="avatar" class="img-thumbnail">
+
+				<!-- edit form column -->
+				<div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+					
+					<% if (user.accountType == "google"){ %>
+						<div class="alert alert-info alert-dismissable">
+					        <a class="panel-close close" data-dismiss="alert">×</a> 
+					        <i class="fa fa-coffee"></i>
+					        You cannot modify password and name of a Google account here. Do so on Google.
+					    </div>
+					<% } %>
+					<h3>Personal info</h3>
+					<form id="form" class="form-horizontal" role="form" action="/users/<%= user.id %>/edit" method="post">
+						<%if (user.accountType == "local"){ %>
+							<div class="form-group">
+								<label class="col-lg-3 control-label">Full name:</label>
+								<div class="col-lg-8">
+									<input name="name" class="form-control" type="text" value="<%= user.local.username %>">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-lg-3 control-label">Password:</label>
+								<div class="col-lg-8">
+									<input id="password" name="password" class="form-control" type="password" value="<%= user.local.password %>">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-lg-3 control-label">Confirm password:</label>
+								<div class="col-lg-8">
+									<input id="confirm" name="confirmPassword" class="form-control" type="password" value="<%= user.local.password %>">
+								</div>
+							</div>
+						<%}%>
+							<div class="form-group">
+								<label class="col-lg-3 control-label">Phone number:</label>
+								<div class="col-lg-8">
+									<input name="phone" class="form-control" type="text" value="<%= user.phone %>">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="control-label">Description</label>
+								<textarea name="description" class="form-control" rows="3"
+									><%= user.description %></textarea>
+						
+							</div>
+
+
+
+							<div class="form-group">
+								<label class="col-md-3 control-label"></label>
+								<div class="col-md-8">
+									<input class="btn btn-primary" value="Save Changes" type="submit">
+									<span></span>
+									<input id="cancel" class="btn btn-default" value="Cancel" type="reset">
+								</div>
+							</div>
+					</form>
+
+					<div id="alertPassword" style="display:none" class="alert alert-danger text-center">
+				        Passwords do not match!
+				    </div>
+				</div>
 			</div>
-
-			<div class="col-xs-7">
-				<form class="form-horizontal">
-				</br>
-					<div class="form-group">
-					    <label class="col-sm-2 control-label">Username:</label>
-					    <div class="col-sm-5">
-					      <p class="form-control-static">JohnnySmith87</p>
-					    </div>
-					</div>
-					<div class="form-group">
-					    <label class="col-sm-2 control-label">Email:</label>
-					    <div class="col-sm-5">
-					      <p class="form-control-static">example_123@hotmail.com</p>
-					    </div>
-					</div>
-					<div class="form-group">
-					    <label for="inputFName3" class="col-sm-2 control-label">First Name:</label>
-					    <div class="col-sm-4">
-					      <input type="text" class="form-control" id="inputFName3" placeholder="ex. John">
-					    </div>
-					</div>
-					<div class="form-group">
-					    <label for="inputLName3" class="col-sm-2 control-label">Last Name:</label>
-					    <div class="col-sm-4">
-					    	<input type="text" class="form-control" id="inputLName3" placeholder="ex. Smith">
-					    </div>
-					</div>
-					<div class="form-group">
-					    <label for="inputPhoneNum3" class="col-sm-2 control-label">Phone Number:</label>
-					    <div class="col-sm-3">
-					    	<input type="text" class="form-control" id="inputPhoneNum3" placeholder="000-000-0000">
-					    </div>
-					</div>
-					<div class="form-group">
-					    <label for="inputCountry3" class="col-sm-2 control-label">Country:</label>
-					    <div class="col-sm-3">
-					    	<input type="text" class="form-control" id="inputCountry3" placeholder="Canada">
-					    </div>
-					    <label for="inputCity3" class="col-sm-1 control-label">City:</label>
-					    <div class="col-sm-3">
-					    	<input type="text" class="form-control" id="inputCity3" placeholder="Toronto">
-					    </div>
-					</div>
-				 	<div class="form-group">
-				 		<label for="inlineRadio1" class="col-sm-2 control-label">Gender:</label>
-						<label class="radio-inline">
-							<input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> Male
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> Female
-						</label>
-					</div>
-					<div class="form-group">
-						<label for="inputPic" class="col-sm-2 control-label">Profile Picture:</label>
-						<div class="col-sm-5">
-							<input type="file" name="profilePic" id="inputPic">
-						</div>
-					</div>
-					<div class="form-group">
-					    <div class="col-sm-offset-2 col-sm-5">
-					     	<button type="submit" class="btn btn-info">Edit</button>
-					    </div>
-				  	</div>
-				</form>
-			</div>
-
-			<div class="col-xs-2"></div>
 		</div>
 
         <% include ./partials/footer.ejs %>
+        <script type="text/javascript">
+        	$("#form").submit(function(event){
+        		if ($("#password").val() != $("#confirm").val()){
+        			event.preventDefault();
+        			$("#alertPassword").css("display","block");
+        		}
+        	});
+        	$("#cancel").click(function(event){
+    			$("#alertPassword").css("display","none");
+        	});
+        </script>
     </body>
 </html>

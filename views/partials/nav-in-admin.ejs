@@ -1,19 +1,20 @@
 <!--The template for navigation bar when a user is logged in -->
+<span id="selectedTab" style="display:none"><%= tab %></span>
 <div class="page-header">
     <div class="container" >
         <h1 class="text-center">TRental</h1>
         <ul class="nav nav-pills nav-justified">
             <li id="navHome" role="presentation"><a href="/home.html">Home</a></li>
             <li id="navAboutUs" role="presentation"><a href="/about-us.html">About Us</a></li>
-            <li id="navSearchBooks" role="presentation"><a href="/search-books.html">Search Books</a></li>
-            <li id="navMonitorUsers" role="presentation"><a href="/monitor-users.html">Monitor Users</a></li>
+            <li id="navSearchPostings" role="presentation"><a href="/search-postings.html">Search Postings</a></li>
+            <li id="navViewUsers" role="presentation"><a href="/view-users.html">View Users</a></li>
 
             <li id="navMyAccount" role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     My Account <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li id="navMyProfile" role="presentation"><a href="/profile.html">My profile</a></li>
+                    <li id="navMyProfile" role="presentation"><a href="/my-profile.html">My profile</a></li>
                 </ul>
             </li>
             
@@ -25,25 +26,28 @@
 
 <!--Updates which tab is currently selected -->
 <script type="text/javascript">
-    var url = window.location.pathname;
-    var filename = url.substring(url.lastIndexOf('/')+1);
-    if (filename == "home.html"){
+    var selectedTab = $("#selectedTab").text();
+    console.log(selectedTab);
+    if (selectedTab == "home"){
         $("#navHome").attr("class", "active");
     }
-    if (filename == "about-us.html"){
+    if (selectedTab == "about-us"){
         $("#navAboutUs").attr("class", "active");
     }
-    if (filename == "search-books.html"){
-        $("#navSearchBooks").attr("class", "active");
+    if (selectedTab == "search-postings"){
+        $("#navSearchPostings").attr("class", "active");
     }
-    if (filename == "logout.html"){
+    if (selectedTab == "logout"){
         $("#navLogout").attr("class", "active");
     }
-    if (filename == "profile.html"){
+    if (selectedTab == "my-profile"){
         $("#navMyAccount").attr("class", "active");
         $("#navMyProfile").attr("class", "bg-success");
     }
-    if (filename == "monitor-users.html"){
-        $("#navMonitorUsers").attr("class", "active");
+    if (selectedTab == "user-profile"){
+        $("#navViewUsers").attr("class", "active");
+    }
+    if (selectedTab == "view-users"){
+        $("#navViewUsers").attr("class", "active");
     }
 </script>
