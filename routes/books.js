@@ -114,8 +114,8 @@ router.route('/edit/:id')
 		     console.log("admin premission");//Test logging
 		 }
 		 
-		 var form = new multiparty.Form();
-		 form.parse(req, function(err, fields, files){
+			 var form = new multiparty.Form();
+			 form.parse(req, function(err, fields, files){
 		     mongoose.model('Books').findById(req.param('id'),function (err, book) {
 			 if (!book.length) {
 			     res.json({success : 0, message : "No such book found"});
