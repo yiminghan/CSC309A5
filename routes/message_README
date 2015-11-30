@@ -1,0 +1,13 @@
+Message API methods:
+GET /message/new/:id
+    get the message sorted by date sent if you are the receiver. The admin has no premission to view private messages.
+POST /message/new/:id
+     create a new message to the receiver with :id
+     form data headers:
+     messageTitle message 
+GET /sent/
+     check the messages you sent sorted by date.  Uses req to get the informations.
+GET /update/
+    used to check how many new messages a particular user has.  constantly request this to keep updated.
+POST /update/:id
+    read the message with :id.  This will register in the databse as read and will not show up as a new message
