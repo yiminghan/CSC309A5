@@ -114,6 +114,7 @@ module.exports = function(passport) {
                                     var newUser = new User();
                                     newUser.accountType="local";
                                     newUser.userType=userType;
+                                    newUser.imgPath = "/avatar/default.png";
 
                                     //default field
                                     newUser.description = "no description";
@@ -121,7 +122,8 @@ module.exports = function(passport) {
                                     // set the user's local credentials
                                     newUser.local.username=req.body.username;
                                     newUser.local.email    = email;
-                                    newUser.local.password = password;
+                                    //newUser.local.password = password;
+                                    newUser.local.password = newUser.generateHash(password);
 
                                     // save the user
                                     newUser.save(function(err) {
@@ -177,6 +179,7 @@ module.exports = function(passport) {
                         var newUser          = new User();
                         newUser.accountType="google";
                         newUser.userType=userType;
+                        newUser.imgPath = "/avatar/default.png";
 
                         //default fields
                         newUser.description = "no description";

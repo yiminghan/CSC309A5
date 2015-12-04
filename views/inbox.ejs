@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <link rel="stylesheet" type="text/css" href="/css/footer.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropdown.css">
+    </head>
+    <body>
+        <span id="userID" style="display:none"><%= user.id %></span>
+        <% include ./partials/handle-nav.ejs %>
+
+        <div class="container">
+            <ul id="messageContainer" class="list-group">
+            </ul>
+        </div>
+    
+        <% include ./partials/footer.ejs %>
+        <script type="text/javascript">
+    		$(document).ready(function(){
+                getMessages();
+    			setInterval(getMessages, 2000);
+    		});
+
+            function delMessage(id){
+                console.log(id);
+                $.ajax({
+                  type: "DELETE",
+                  url: '/api/messages/' + id
+                });
+            }
+            function getMessages(){
+             $.get("/api/messages?receiverID=" + $("#userID").text(), function(messages){
+                    $("#messageContainer").empty();
+                    if(messages.length == 0){
+                        $("#messageContainer").append("<p class='bg-warning'><em>No messages</em></p>");
+                    }
+                    for (var i = 0; i<messages.length; i ++){
+                        console.log(messages[i]);
+                        var removeButton = "<button type='button' class='btn btn-danger' "
+                        + "onclick='delMessage(&quot;" + messages[i]._id + "&quot;)'>" 
+                        +" Delete Message</button>";
+
+                        $("#messageContainer").append(
+                            "<li class='list-group-item'>"
+                            + "<h4> From: "+ messages[i].messengerName + " </h4>" +
+                            "<p>" + messages[i].message + "</p>"
+                            + "<a class='btn btn-primary' href='/users/"
+                            + messages[i].messengerID + "/profile.html'>Reply by inbox</a>"
+                            + removeButton 
+                            + "<hr/>"
+                            + "<span class='bg-info'>" + messages[i].dateSent + "</span>" 
+                            + "</li>");
+                    }
+                });
+            }
+
+    	</script>
+        <script type="text/javascript">
+        </script>
+    </body>
+</html>

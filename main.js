@@ -1,19 +1,20 @@
 var express=require("express");
-var morgan=require("morgan");
-var mongoose=require("mongoose");
-var bodyParser=require("body-parser");
-var path=require("path");
-var session=require("express-session");
-var cookieParser=require("cookie-parser");
-var passport=require("passport");
-var flash=require('connect-flash');
+var morgan=require("morgan");  //A logger
+var mongoose=require("mongoose"); //A MongoDB ODM tool
+var bodyParser=require("body-parser");  //A module for parsing HTTP request body
+var path=require("path"); //A module for directory path manipulation
+var session=require("express-session"); //A module for session, needed for passport
+var cookieParser=require("cookie-parser"); //A module for cookies, neded for passport
+var passport=require("passport"); //A module that handles authentication and user sessions
+var flash=require('connect-flash'); //Module for storing short messages in the flash area of session
 
 //Connect to mongoose
 mongoose.connect('mongodb://127.0.0.1/A5');
 //Configure some passport settings
 require('./config/passport')(passport);
 
-//The order of these lines matter, do not modify
+//A list of middleware that our app will be using
+// *The order of these lines matter, do not modify*
 var app=express();
 app.use(morgan("dev"));
 app.use(cookieParser());
@@ -23,17 +24,18 @@ app.use(session({secret:"mysecret", resave: false, saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-require("./routes/RESTful_APIs.js")(app);
+app.use("/api", require("./routes/REST-API/user.js"));
+app.use("/api", require("./routes/REST-API/posting.js"));
+app.use("/api", require("./routes/REST-API/rating.js"));
+app.use("/api", require("./routes/REST-API/message.js"));
 require("./routes/route.js")(app, passport);
 
-//YiMing's book API
-// app.use('/books', books);
 
 //Serves the static files (css, image, and javascript file)
 //The HTMLs are not static
 app.use(express.static(path.join(__dirname,"static")));
 
-// set up ejs for templating
+// set up ejs for dynamic templating
 app.set('view engine', 'ejs'); 
 
 

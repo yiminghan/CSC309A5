@@ -13,7 +13,7 @@
                 <div class="row">
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="text-center">
-                            <img src="http://lorempixel.com/200/200/people/9/" class="avatar img-circle img-thumbnail" alt="avatar">
+                            <img src="<%= selectedUser.imgPath %>" class="avatar img-circle img-thumbnail" style="width:200px; height:200px" alt="avatar">
                         </div>
 
                     </div>
@@ -43,7 +43,41 @@
                             <br>
                         <% } %>
 
-                        <a class="btn btn-primary" href="#"><i class="fa fa-inbox"> Inbox</i></a>
+                        <button type="button"  class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                            <i class="fa fa-inbox"> Inbox</i>
+                        </button>
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Your message</h4>
+                                    </div>
+                                    <form id="form">
+                                        <div class="modal-body">
+                                            <input id="inputReceiverID" name="receiverID" value="<%= selectedUser.id%>" type="hidden">
+                                            <% if(selectedUser.accountType=="google"){ %>
+                                                <input id="inputReceiverName" name="receiverName" value="<%= selectedUser.google.name%>" type="hidden">
+                                            <% }else{ %>
+                                                <input id="inputReceiverName" name="receiverName" value="<%= selectedUser.local.username%>" type="hidden">
+                                            <% } %>
+                                            <input id="inputMessengerID" name="messengerID" value="<%= user.id%>" type="hidden">
+                                            <% if(user.accountType=="google"){ %>
+                                                <input id="inputMessengerName" name="messengerName" value="<%= user.google.name%>" type="hidden">
+                                            <% }else{ %>
+                                                <input id="inputMessengerName" name="messengerName" value="<%= user.local.username%>" type="hidden">
+                                            <% } %>
+                                            <textarea id="inputMessage" name="message" rows="7" class="form-control"></textarea>
+                                            <div id="alertMessage"></div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="reset" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary">Send!</button>
+                                        </div>
+                                    <form>
+                                </div>
+                            </div>
+                        </div>
                         <% if(user.userType == "admin"){ %>
                             <a class="btn btn-primary" href="/users/<%= selectedUser.id %>/remove"><i class="fa fa-trash"> Remove</i></a>
                         <% } %>
@@ -54,5 +88,30 @@
         </div>
 
         <% include ./partials/footer.ejs %>
+        <script type="text/javascript">
+            $("form").submit(function(event){
+                event.preventDefault();
+                var receiverName = $("#inputReceiverName").val();
+                var receiverID = $("#inputReceiverID").val();
+                var messengerName = $("#inputMessengerName").val();
+                var messengerID = $("#inputMessengerID").val();
+                var message = $("#inputMessage").val();
+                if (message == ""){
+                    $("#alertMessage").empty();
+                    $("#alertMessage").append("<div class='alert alert-danger'>Empty Message!</div>");
+                }else{
+                    $.post("/api/messages", 
+                            {receiverName: receiverName,
+                            receiverID:receiverID,
+                            messengerName:messengerName,
+                            messengerID:messengerID,
+                            message:message}, 
+                            function(message){
+                                $("#alertMessage").empty();
+                                $("#myModal").modal('toggle');
+                    });
+                }
+            });
+        </script>
     </body>
 </html>

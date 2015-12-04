@@ -10,29 +10,28 @@
 
 		<div class="container">
 		<h2 class="text-center">Edit Profile</h1>
-			<div class="row">
-				<!-- left column -->
-				<div class="col-md-4 col-sm-6 col-xs-12">
-					<div class="text-center">
-						<img src="http://lorempixel.com/200/200/people/9/" class="avatar img-circle img-thumbnail" alt="avatar">
-						<h6>Upload a different photo...</h6>
-						<input type="file" class="text-center center-block well well-sm">
+			<form class="form-horizontal" enctype="multipart/form-data" role="form" action="/users/<%= user.id %>/edit" method="post">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-4 col-sm-6 col-xs-12">
+						<div class="text-center">
+							<img id="profileImg" src="<%= user.imgPath %>" class="avatar img-circle img-thumbnail" alt="avatar" style="width:200px; height:200px">
+							<h6>Upload a different photo...</h6>
+							<input id="inputImg" type="file" class="text-center center-block well well-sm" accept=".jpg,.png" name="img">
+						</div>
 					</div>
-				</div>
 
-
-				<!-- edit form column -->
-				<div class="col-md-8 col-sm-6 col-xs-12 personal-info">
-					
-					<% if (user.accountType == "google"){ %>
-						<div class="alert alert-info alert-dismissable">
-					        <a class="panel-close close" data-dismiss="alert">×</a> 
-					        <i class="fa fa-coffee"></i>
-					        You cannot modify password and name of a Google account here. Do so on Google.
-					    </div>
-					<% } %>
-					<h3>Personal info</h3>
-					<form id="form" class="form-horizontal" role="form" action="/users/<%= user.id %>/edit" method="post">
+					<!-- edit form column -->
+					<div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+						
+						<% if (user.accountType == "google"){ %>
+							<div class="alert alert-info alert-dismissable">
+						        <a class="panel-close close" data-dismiss="alert">×</a> 
+						        <i class="fa fa-coffee"></i>
+						        You cannot modify password and name of a Google account here. Do so on Google.
+						    </div>
+						<% } %>
+						<h3>Personal info</h3>
 						<%if (user.accountType == "local"){ %>
 							<div class="form-group">
 								<label class="col-lg-3 control-label">Full name:</label>
@@ -40,63 +39,131 @@
 									<input name="name" class="form-control" type="text" value="<%= user.local.username %>">
 								</div>
 							</div>
-							<div class="form-group">
-								<label class="col-lg-3 control-label">Password:</label>
-								<div class="col-lg-8">
-									<input id="password" name="password" class="form-control" type="password" value="<%= user.local.password %>">
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-lg-3 control-label">Confirm password:</label>
-								<div class="col-lg-8">
-									<input id="confirm" name="confirmPassword" class="form-control" type="password" value="<%= user.local.password %>">
-								</div>
-							</div>
 						<%}%>
-							<div class="form-group">
-								<label class="col-lg-3 control-label">Phone number:</label>
-								<div class="col-lg-8">
-									<input name="phone" class="form-control" type="text" value="<%= user.phone %>">
-								</div>
+						<div class="form-group">
+							<label class="col-lg-3 control-label">Phone number:</label>
+							<div class="col-lg-8">
+								<input name="phone" class="form-control" type="text" value="<%= user.phone %>">
 							</div>
+						</div>
 
-							<div class="form-group">
-								<label class="control-label">Description</label>
-								<textarea name="description" class="form-control" rows="3"
-									><%= user.description %></textarea>
-						
+						<div class="form-group">
+							<label class="control-label">Description</label>
+							<textarea name="description" class="form-control" rows="3"
+								><%= user.description %></textarea>
+						</div>
+
+
+
+						<div class="form-group">
+							<label class="col-md-3 control-label"></label>
+							<div class="col-md-8">
+								<input class="btn btn-primary" value="Update Info" type="submit">
+								<span></span>
+								<input class="btn btn-default" value="Cancel" type="reset">
 							</div>
-
-
-
-							<div class="form-group">
-								<label class="col-md-3 control-label"></label>
-								<div class="col-md-8">
-									<input class="btn btn-primary" value="Save Changes" type="submit">
-									<span></span>
-									<input id="cancel" class="btn btn-default" value="Cancel" type="reset">
-								</div>
-							</div>
-					</form>
-
-					<div id="alertPassword" style="display:none" class="alert alert-danger text-center">
-				        Passwords do not match!
-				    </div>
+						</div>						
+					</div>
 				</div>
-			</div>
+			</form>
+			<%if (user.accountType == "local"){ %>
+				<div class="col-md-4 col-sm-6 col-xs-12">
+				</div>
+				<div class="col-md-8 col-sm-6 col-xs-12">
+					<h3>Modify Password</h3>
+					<form id="form" class="form-horizontal" role="form" action="/users/<%= user.id %>/change-password" method="post">
+						<div class="form-group">
+							<label class="col-lg-3 control-label">Old Password:</label>
+							<div class="col-lg-8">
+								<input id="oldPassword" name="oldPassword" class="form-control" type="password">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-3 control-label">New Password:</label>
+							<div class="col-lg-8">
+								<input id="newPassword" name="newPassword" class="form-control" type="password">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-3 control-label">Confirm password:</label>
+							<div class="col-lg-8">
+								<input id="confirm" name="confirmPassword" class="form-control" type="password">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label"></label>
+							<div class="col-md-8">
+								<input class="btn btn-primary" value="Change Password" type="submit">
+								<span></span>
+								<input id="cancel" class="btn btn-default" value="Cancel" type="reset">
+							</div>
+						</div>
+					</form> 
+					
+					<% if (passwordMessage != ""){ %>
+						<div id="alertPassword" style="display:block" class="alert alert-danger text-center">
+							<%= passwordMessage %>
+						</div>							
+					<% }else{ %>
+						<div id="alertPassword" style="display:none" class="alert alert-danger text-center">
+							
+						</div>		
+					<% } %>
+			 	</div>
+			<%}%>
 		</div>
 
         <% include ./partials/footer.ejs %>
         <script type="text/javascript">
         	$("#form").submit(function(event){
-        		if ($("#password").val() != $("#confirm").val()){
+        		if ($("#newPassword").val().length == 0){
         			event.preventDefault();
         			$("#alertPassword").css("display","block");
+        			$("#alertPassword").empty();
+        			$("#alertPassword").text("Password cannot be empty!");
+        		}
+        		if ($("#newPassword").val() != $("#confirm").val()){
+        			event.preventDefault();
+        			$("#alertPassword").css("display","block");
+        			$("#alertPassword").empty();
+        			$("#alertPassword").text("Passwords do not match!");
         		}
         	});
         	$("#cancel").click(function(event){
     			$("#alertPassword").css("display","none");
+    			$("#alertPassword").empty();
         	});
         </script>
+
+        <script type="text/javascript">
+
+			function readImage(file) {
+
+			    var reader = new FileReader();
+			    var image  = new Image();
+
+			    reader.readAsDataURL(file);  
+			    reader.onload = function(_file) {
+			        image.src    = _file.target.result;              // url.createObjectURL(file);
+			        image.onload = function() {
+			            var w = this.width,
+			                h = this.height,
+			                t = file.type,                           // ext only: // file.type.split('/')[1],
+			                n = file.name,
+			                s = ~~(file.size/1024) +'KB';
+			            $('#profileImg').attr('src', this.src);
+			        };
+			        image.onerror= function() {
+			            alert('Invalid file type: '+ file.type);
+			        };      
+			    };
+
+			}
+			$("#inputImg").change(function (e) {
+			    if(this.disabled) return alert('File upload not supported!');
+			    var F = this.files;
+			    if(F && F[0]) for(var i=0; i<F.length; i++) readImage( F[i] );
+			});
+		</script>
     </body>
 </html>

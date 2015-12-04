@@ -1,16 +1,17 @@
 var mongoose = require('mongoose');
 
-var messageSchema = mongoose.Schema({
 
-    // matches the system generated Id from User Schema
-    messengerId : String,
+//The schema for a message. 
+//A message contains a messenger and a receiver. 
+var messageSchema = mongoose.Schema({
+    messengerID : String,
     messengerName : String,
-    receiverId  : String,
-    messageTitle : String,
+    receiverName : String,
+    receiverID  : String,
     message : String,
     //checks if the user has read the message
-    read : Number, //0 for false, >1 for true
-    dateSent : Date
+    read : Boolean, 
+    dateSent : {type:Date, default: Date.now}
 });
 
 module.exports = mongoose.model('Message', messageSchema);
