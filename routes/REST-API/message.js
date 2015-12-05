@@ -1,6 +1,6 @@
 var router = require('express').Router();
 var Message = require('../../models/message');
-
+var sanitizer = require('sanitizer');
 
 //Return all messages. 
 router.get("/messages", function(req, res){
@@ -32,7 +32,7 @@ router.get("/messages/:id", function(req, res){
     })
 });
 
-router.post("/messages", function(req, res){
+router.post("/messages", validateFields, function(req, res){
 	var newMessage = new Message();
 	if (req.body.messengerID){
 		newMessage.messengerID = req.body.messengerID;
@@ -185,3 +185,22 @@ router.delete("/messages/:id", function(req, res){
 // 	}
 //     });
 module.exports = router;
+
+
+//Validate fields in req.body (the input form) to prevent XSS Attacks
+function validateFields(req, res, next){
+    var flag = false;
+    //Check if there are any fields whose value after sanitizing is different from original
+    //If there is, then it is an indication that the original field is invalid
+    for (var field in req.body){
+        if (req.body[field] != sanitizer.sanitize(req.body[field])){
+            flag = true;
+        }
+    }   
+    if (flag == true){
+        res.json({ error: "invalid input! Try again."});
+
+    }else{
+        next();       
+    }
+}

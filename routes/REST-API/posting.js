@@ -1,5 +1,6 @@
 var router = require('express').Router();
 var Posting = require('../../models/posting');
+var sanitizer = require('sanitizer');
 
 //Delete a posting with specified id
 router.delete("/postings/:id", function(req, res){
@@ -22,7 +23,7 @@ router.get("/postings", function(req, res){
 });
 
 //Update a posting with specified id
-router.put("/postings/:id", function(req, res){
+router.put("/postings/:id", validateFields, function(req, res){
     Posting.findById(req.params.id, function(err, posting){
         if (err)
             res.send(err);
@@ -39,3 +40,21 @@ router.put("/postings/:id", function(req, res){
 });
 
 module.exports = router;
+
+//Validate fields in req.body (the input form) to prevent XSS Attacks
+function validateFields(req, res, next){
+    var flag = false;
+    //Check if there are any fields whose value after sanitizing is different from original
+    //If there is, then it is an indication that the original field is invalid
+    for (var field in req.body){
+        if (req.body[field] != sanitizer.sanitize(req.body[field])){
+            flag = true;
+        }
+    }   
+    if (flag == true){
+        res.json({ error: "invalid input! Try again."});
+
+    }else{
+        next();       
+    }
+}

@@ -107,7 +107,6 @@
                             </div>
 
                             <div id="alertMessage" class="alert alert-danger" role="alert" style="margin-top:20px;display:none">
-                                Please enter all fields!
                             </div>
                         </form>
                     </div>
@@ -129,6 +128,8 @@
                 var raterID = $("#raterID").text();
                 if (heading == "" || comment == ""){
                     event.preventDefault();
+                    $("#alertMessage").empty();
+                    $("#alertMessage").text("Empty inputs!");
                     $("#alertMessage").css("display", "block");
                 }else{
                     $("#alertMessage").css("display", "none");
@@ -138,6 +139,16 @@
                         "comment" :  comment,
                         "raterName" : raterName,
                         "raterID": raterID
+                        },
+                        function(data){
+                            if (data.error){
+                                $("#alertMessage").empty();
+                                $("#alertMessage").text(data.error);
+                                $("#alertMessage").css("display", "block");
+                            }else{
+                                $("#alertMessage").empty();
+                                $("#alertMessage").css("display", "none");
+                            }
                         }
                     );
                 }

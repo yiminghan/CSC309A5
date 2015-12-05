@@ -1,9 +1,10 @@
 var router = require('express').Router();
 var Rating = require('../../models/rating');
+var sanitizer = require('sanitizer');
 
 
 //Create a rating for a posting with specified pid
-router.post("/postings/:pid/ratings", function(req, res){
+router.post("/postings/:pid/ratings", validateFields, function(req, res){
     var newRating = new Rating();
     newRating.postingID = req.params.pid;
     if (req.body.heading){
@@ -50,3 +51,22 @@ router.get("/ratings", function(req, res){
 });
 
 module.exports = router;
+
+//Validate fields in req.body (the input form) to prevent XSS Attacks
+function validateFields(req, res, next){
+    var flag = false;
+    //Check if there are any fields whose value after sanitizing is different from original
+    //If there is, then it is an indication that the original field is invalid
+    for (var field in req.body){
+        if (req.body[field] != sanitizer.sanitize(req.body[field])){
+            flag = true;
+        }
+    }   
+    console.log(flag);
+    if (flag == true){
+        res.json({ error: "invalid input! Try again."});
+
+    }else{
+        next();       
+    }
+}

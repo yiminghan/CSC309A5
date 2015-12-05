@@ -1,10 +1,11 @@
 var router = require('express').Router();
 var User = require('../../models/user');
+var sanitizer = require('sanitizer');
 
 
 //Returns a list of users
 router.get("/users", function(req, res){
-    User.find({}, function(err, users) {
+    User.find({}, "phone description imgPath userType accountType _id", function(err, users) {
         // if there are any errors, return the error before anything else
         if (err)
             res.send(err);
@@ -26,7 +27,7 @@ router.get("/users/:id", function(req, res){
 
 
 //Update a particular user with id
-router.put("/users/:id", function(req, res){
+router.put("/users/:id", validateFields, function(req, res){
     User.findById(req.params.id, function(err, user) {
         // if there are any errors, return the error before anything else
         if (err)
@@ -61,3 +62,22 @@ router.put("/users/:id", function(req, res){
 });
 
 module.exports = router;
+
+//Validate fields in req.body (the input form) to prevent XSS Attacks
+function validateFields(req, res, next){
+    var flag = false;
+    //Check if there are any fields whose value after sanitizing is different from original
+    //If there is, then it is an indication that the original field is invalid
+    for (var field in req.body){
+        if (req.body[field] != sanitizer.sanitize(req.body[field])){
+            flag = true;
+        }
+    }   
+    console.log(flag);
+    if (flag == true){
+        res.json({ error: "invalid input! Try again."});
+
+    }else{
+        next();       
+    }
+}

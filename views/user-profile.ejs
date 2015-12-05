@@ -107,8 +107,13 @@
                             messengerID:messengerID,
                             message:message}, 
                             function(message){
-                                $("#alertMessage").empty();
-                                $("#myModal").modal('toggle');
+                                if(message.error){
+                                    $("#alertMessage").empty();
+                                    $("#alertMessage").append("<div class='alert alert-danger'> " + message.error + " </div>");
+                                }else{
+                                    $("#alertMessage").empty();
+                                    $("#myModal").modal('toggle');
+                                }
                     });
                 }
             });

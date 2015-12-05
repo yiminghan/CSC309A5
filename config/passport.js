@@ -6,6 +6,8 @@ var configAuth = require('./auth');
 // load up the user model
 var User = require('../models/user');
 
+var sanitizer = require('sanitizer');
+
 
 
 
@@ -40,7 +42,11 @@ module.exports = function(passport) {
                 passReqToCallback : true // allows us to pass back the entire request to the callback
             },
             function(req, email, password, done) { // callback with email and password from our form
-
+                //Prevents Xss attacks, checks if input is valid
+                if (email != sanitizer.sanitize(email) || password != sanitizer.sanitize(password)){
+                    return done(null, false, req.flash("loginMessage", "Invalid input"));
+                }
+                                
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
                 User.findOne(
@@ -82,6 +88,12 @@ module.exports = function(passport) {
                 passReqToCallback : true // allows us to pass back the entire request to the callback
             },
             function(req, email, password, done) {
+                //Prevents Xss attacks, checks if input is valid
+                if (email != sanitizer.sanitize(email) || password != sanitizer.sanitize(password)
+                    || req.body.username != sanitizer.sanitize(req.body.username)){
+                    return done(null, false, req.flash("signupMessage", "Invalid input"));
+                }
+                
                 if (password != req.body.confirmPassword){
                     return done(null, false, req.flash('signupMessage', "Passwords do not match!"));
                 }
@@ -120,7 +132,7 @@ module.exports = function(passport) {
                                     newUser.description = "no description";
                                     newUser.phone = "N/A";
                                     // set the user's local credentials
-                                    newUser.local.username=req.body.username;
+                                    newUser.local.username= req.body.username;
                                     newUser.local.email    = email;
                                     //newUser.local.password = password;
                                     newUser.local.password = newUser.generateHash(password);
@@ -204,3 +216,4 @@ module.exports = function(passport) {
     }));
 
 };
+

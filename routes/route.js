@@ -8,6 +8,7 @@ var multer  = require('multer')
 var upload = multer({ dest: 'static/avatar/' })
 var fs = require("fs");
 var path = require("path");
+var sanitizer = require('sanitizer');
 
 
 
@@ -131,6 +132,45 @@ module.exports=function(app, passport){
         }
     });
 
+    //Returns the postings page for a particular user. This page shows
+    //all postings a particular user has so far
+    app.get("/users/:id/postings.html", isLoggedIn, function(req, res){
+        //User can only view their own postings
+        if (req.params.id == req.user.id){
+            Posting.find({ownerID: req.user.id}, function(err, postings){
+                var data = getData(req);
+                data.postingList = postings;
+                data.tab = "my-postings";
+                res.render("posting-list.ejs", data);
+            });
+        }
+    });
+
+    app.get("/postings/:id/details.html", isLoggedIn, function(req, res){
+        Posting.findById(req.params.id, function(err, posting){
+            if (err)
+                res.send(err);
+
+            Posting
+            .find({field:posting.field, _id: {$ne : posting.id}}, 
+            function(err, recommendations){
+                if(posting.ownerID == req.user.id){
+                    var data = getData(req);
+                    data.posting = posting;
+                    data.recommendations = recommendations;
+                    data.tab = "my-postings";
+                    res.render("my-posting-details.ejs", data);
+                }else{
+                    var data = getData(req);
+                    data.posting = posting;
+                    data.recommendations = recommendations;
+                    data.tab = "search-postings";
+                    res.render("posting-details.ejs", data);
+                }
+            });
+        });
+    });
+
     //Serves the edit profile page for a particular user with specified id. Must be logged in.
     //User can only edit their own profile, including admin.
     app.get('/users/:id/edit_profile.html', isLoggedIn, function(req, res) {
@@ -166,7 +206,11 @@ module.exports=function(app, passport){
     });
 
 
-    app.post("/create-posting", isLoggedIn, isUser, function(req, res){
+    //The endpoints below are developer APIs (not resful) for login, create postings
+    //signup...etc.
+    //Sanitizer is used to make sure form input fields are valid and prevent XSS attacks.
+
+    app.post("/create-posting", isLoggedIn, isUser, validateFields, function(req, res){
         var newPosting = new Posting();
         newPosting.ISBN = req.body.ISBN;
         newPosting.bookTitle = req.body.bookTitle;
@@ -194,19 +238,6 @@ module.exports=function(app, passport){
 
     });
 
-    //Returns the postings page for a particular user. This page shows
-    //all postings a particular user has so far
-    app.get("/users/:id/postings.html", isLoggedIn, function(req, res){
-        //User can only view their own postings
-        if (req.params.id == req.user.id){
-            Posting.find({ownerID: req.user.id}, function(err, postings){
-                var data = getData(req);
-                data.postingList = postings;
-                data.tab = "my-postings";
-                res.render("posting-list.ejs", data);
-            });
-        }
-    });
 
     //Remove a posting. Also remove the ratings attached to that posting
     app.get("/users/:uid/postings/:pid/delete", isLoggedIn, function(req, res){
@@ -234,34 +265,10 @@ module.exports=function(app, passport){
     });
 
 
-    app.get("/postings/:id/details.html", isLoggedIn, function(req, res){
-        Posting.findById(req.params.id, function(err, posting){
-            if (err)
-                res.send(err);
-
-            Posting
-            .find({field:posting.field, _id: {$ne : posting.id}}, 
-            function(err, recommendations){
-                if(posting.ownerID == req.user.id){
-                    var data = getData(req);
-                    data.posting = posting;
-                    data.recommendations = recommendations;
-                    data.tab = "my-postings";
-                    res.render("my-posting-details.ejs", data);
-                }else{
-                    var data = getData(req);
-                    data.posting = posting;
-                    data.recommendations = recommendations;
-                    data.tab = "search-postings";
-                    res.render("posting-details.ejs", data);
-                }
-            });
-        });
-    });
 
    
 
-    app.post('/users/:id/edit', isLoggedIn, upload.single("img"), function(req, res) {
+    app.post('/users/:id/edit', isLoggedIn, upload.single("img"), validateFields, function(req, res) {
         //If the requested profile belongs to the authenticated user
         //Ie. the user is editing his own profile
         //Also, a user can only edit his own profile, same with admin.
@@ -301,7 +308,7 @@ module.exports=function(app, passport){
     });
 
 
-    app.post('/users/:id/change-password', isLoggedIn, function(req, res){
+    app.post('/users/:id/change-password', isLoggedIn, validateFields, function(req, res){
         if (req.user.id == req.params.id){
             var user = req.user;
             console.log(req.body.oldPassword);
@@ -443,7 +450,7 @@ function getData(req){
     return data;
 }
 
-
+//Route middleware to check if the logged in user is a normal user
 function isUser(req, res, next){
     if (req.user.userType == "user"){
         return next();
@@ -452,11 +459,33 @@ function isUser(req, res, next){
     res.redirect("/my-profile.html");
 }
 
-
+//Route middleware to check if the logged in user is an admin
 function isAdmin(req, res, next){
     if (req.user.userType == "admin"){
         return next();
     }
 
     res.redirect("/my-profile.html");
+}
+
+//Validate fields in req.body (the input form) to prevent XSS Attacks
+function validateFields(req, res, next){
+    var flag = false;
+    //Check if there are any fields whose value after sanitizing is different from original
+    //If there is, then it is an indication that the original field is invalid
+    for (var field in req.body){
+        if (req.body[field] != sanitizer.sanitize(req.body[field])){
+            flag = true;
+        }
+    }   
+    console.log(flag);
+    if (flag == true){
+        var data = getData(req);
+        data.tab = null;
+        res.render("invalid.ejs", data);
+
+    }else{
+        console.log("next");
+        next();       
+    }
 }
