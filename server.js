@@ -5,6 +5,7 @@ var bodyParser=require("body-parser");  //A module for parsing HTTP request body
 var path=require("path"); //A module for directory path manipulation
 var session=require("express-session"); //A module for session, needed for passport
 var cookieParser=require("cookie-parser"); //A module for cookies, neded for passport
+var MongoStore = require('connect-mongo')(session);  //Used for production environment 
 var passport=require("passport"); //A module that handles authentication and user sessions
 var flash=require('connect-flash'); //Module for storing short messages in the flash area of session
 
@@ -28,7 +29,10 @@ var createServer = function(port, db){
 	app.use(cookieParser());
 	app.use(bodyParser.urlencoded({ extended: false }))
 	app.use(bodyParser.json())
-	app.use(session({secret:"mysecret", resave: false, saveUninitialized: true}));
+	app.use(session({secret:"mysecret", 
+					store: new MongoStore({url:'mongodb://yimii:csc309@ds041032.mongolab.com:41032/csc309',
+					ttl: 14 * 24 * 60 * 60 }),// = 14 days. Default
+			resave: false, saveUninitialized: true}));
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(flash());
@@ -38,7 +42,7 @@ var createServer = function(port, db){
 	app.use("/api", require("./routes/REST-API/message.js"));
 	require("./routes/route.js")(app, passport);
 
-
+    app.set('port', (process.env.PORT || 3000));
 	//Serves the static files (css, image, and javascript file)
 	//We cache the static files for one day (86400000 ms)
 	app.use(express.static(path.join(__dirname,"static"), { maxAge: 86400000 }));
@@ -46,7 +50,7 @@ var createServer = function(port, db){
 	// set up ejs for dynamic templating
 	app.set('view engine', 'ejs'); 
 
-	return app.listen(port, function(){
+	return app.listen(app.get('port'), function(){
 		console.log("Server running")
 	});	
 }

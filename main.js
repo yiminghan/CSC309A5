@@ -10,5 +10,5 @@ if (cluster.isMaster){
 	}
 }else{
 	//Listen on port 3000, and use the specified database
-	server(3000, 'mongodb://127.0.0.1/A5');
+	server(3000, 'mongodb://yimii:csc309@ds041032.mongolab.com:41032/csc309');
 }
