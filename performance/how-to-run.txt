@@ -1,0 +1,14 @@
+You need locust to run this file. First download and install locustio
+
+This load-testing tool assumes the database already contains a local (non-google) user
+account with the email:jen@abc.com  and the password: 123
+
+To run the tool, first run the the server:
+node main.js
+
+then run the locust file
+locust --host=http://localhost:3000
+
+Then go to this site
+http://127.0.0.1:8089
+and enter the data for simulations

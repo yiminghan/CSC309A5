@@ -31,6 +31,16 @@ router.post("/postings/:pid/ratings", validateFields, function(req, res){
     });
 });
 
+//delete a rating of from a posting
+router.delete("/postings/:pid/ratings/:rid", function(req, res){
+    Rating.remove({_id: req.params.rid}, function(err, result){
+        if (err)
+            res.send(err);
+        res.json(result);
+    });
+});
+
+
 //Get ratings for a posting with pid
 router.get("/postings/:pid/ratings", function(req, res){
     Rating.find({postingID:req.params.pid}, function(err, ratings){
@@ -62,7 +72,6 @@ function validateFields(req, res, next){
             flag = true;
         }
     }   
-    console.log(flag);
     if (flag == true){
         res.json({ error: "invalid input! Try again."});
 

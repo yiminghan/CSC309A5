@@ -4,8 +4,8 @@ var sanitizer = require('sanitizer');
 
 
 //Returns a list of users
-router.get("/users", function(req, res){
-    User.find({}, "phone description imgPath userType accountType _id", function(err, users) {
+router.get("/users",  function(req, res){
+    User.find({},  function(err, users) {
         // if there are any errors, return the error before anything else
         if (err)
             res.send(err);
@@ -25,6 +25,44 @@ router.get("/users/:id", function(req, res){
     });
 });
 
+
+//Create a user
+router.post("/users", validateFields, function(req, res){
+    var newUser = new User();
+    if (req.body.accountType){
+        newUser.accountType = req.body.accountType;
+    }
+    if (req.body.userType){
+        newUser.userType = req.body.userType;
+    }
+    if (req.body.imgPath){
+        newUser.imgPath = req.body.imgPath;
+    }
+    if (req.body.description){
+        newUser.description = req.body.description;
+    }
+    if (req.body.phone){
+        newUser.phone = req.body.phone;
+    }
+    if (req.body.accountType == "local"){
+        if (req.body.username){
+            newUser.local.username = req.body.username;
+        }
+        if (req.body.email){
+            newUser.local.email = req.body.email;
+        }
+        if (req.body.password){
+            newUser.local.password = req.body.password;
+        }
+    }
+
+    newUser.save(function(err, user){
+        if(err){
+            res.send(err);
+        }
+        res.json(user);
+    });
+});
 
 //Update a particular user with id
 router.put("/users/:id", validateFields, function(req, res){
@@ -61,6 +99,18 @@ router.put("/users/:id", validateFields, function(req, res){
     });
 });
 
+
+//remove a user by id
+router.delete("/users/:id", function(req, res){
+    User.remove({_id:req.params.id}, function(err, result) {
+        // if there are any errors, return the error before anything else
+        if (err)
+            res.send(err);
+        res.json(result);
+    });
+});
+
+
 module.exports = router;
 
 //Validate fields in req.body (the input form) to prevent XSS Attacks
@@ -73,7 +123,6 @@ function validateFields(req, res, next){
             flag = true;
         }
     }   
-    console.log(flag);
     if (flag == true){
         res.json({ error: "invalid input! Try again."});
 
@@ -81,3 +130,4 @@ function validateFields(req, res, next){
         next();       
     }
 }
+

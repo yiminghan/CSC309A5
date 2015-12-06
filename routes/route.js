@@ -210,6 +210,7 @@ module.exports=function(app, passport){
     //signup...etc.
     //Sanitizer is used to make sure form input fields are valid and prevent XSS attacks.
 
+    //Api methods for creating a posting, use the input form fields to create posting
     app.post("/create-posting", isLoggedIn, isUser, validateFields, function(req, res){
         var newPosting = new Posting();
         newPosting.ISBN = req.body.ISBN;
@@ -252,6 +253,7 @@ module.exports=function(app, passport){
         });
     });
 
+    //Same as above
     app.get("/postings/:pid/delete", isLoggedIn, function(req, res){
         Posting.remove({_id:req.params.pid}, function(err, posting){
             if (err)
@@ -264,14 +266,11 @@ module.exports=function(app, passport){
         });
     });
 
-
-
-   
-
+    //Edit a user's profile
     app.post('/users/:id/edit', isLoggedIn, upload.single("img"), validateFields, function(req, res) {
         //If the requested profile belongs to the authenticated user
         //Ie. the user is editing his own profile
-        //Also, a user can only edit his own profile, same with admin.
+        //Note: a user can only edit his own profile, same with admin.
         if (req.user.id == req.params.id){
             var user = req.user;
 
@@ -281,6 +280,7 @@ module.exports=function(app, passport){
                     fs.unlink(path.join(__dirname, ".." , "static", user.imgPath), function(err) {
                     });
                 }
+                //All profile pics are placed in avatar folder
                 user.imgPath = "/avatar/" + req.file.filename;
             }
             if (req.body.name && user.accountType =="local"){
@@ -307,13 +307,15 @@ module.exports=function(app, passport){
         }
     });
 
-
+    //API method for changing password
     app.post('/users/:id/change-password', isLoggedIn, validateFields, function(req, res){
+        //We first check if the currently logged in user is same as the
+        //user whose password is about to change
+        //(A user can only change his own password)
         if (req.user.id == req.params.id){
             var user = req.user;
-            console.log(req.body.oldPassword);
-            console.log(req.body.newPassword);
             if (req.body.newPassword && user.accountType =="local"){
+                //Checks if the old password is correct
                 if (user.validPassword(req.body.oldPassword)){
                     //Encrypt password and store into database
                     user.local.password = user.generateHash(req.body.newPassword);
@@ -322,7 +324,6 @@ module.exports=function(app, passport){
                             res.send(err);
                         }
                         res.redirect("/users/" + user.id + "/profile.html");  
-                        
                     });       
                 }else{
                     req.flash("passwordMessage", "Incorrect (old) password!");
@@ -339,12 +340,15 @@ module.exports=function(app, passport){
     //To delete a user, we need to delete the User itself, the user's postings,
     //All ratings on that user's postings, and all messages from and to that user
     app.get('/users/:id/remove', isLoggedIn, isAdmin, function(req, res){
+        //Remove all messages if either the messenger or the receiver is the
+        //user to be deleted
         Message.remove(
             {$or:[{messengerID: req.params.id}, {receiverID : req.params.id}]}
             , function(err, messages){
             if (err)
                 res.send(err);
 
+            //Find all postings where the owner is the user to be deleted
             Posting.find({ownerID:req.params.id}, function(err, postings){
                 if (err)
                         res.send(err);
@@ -356,6 +360,8 @@ module.exports=function(app, passport){
                     if (err)
                             res.send(err);
 
+                    //For each of the posting the user to be deleted owns,
+                    //delete all ratings associated with that posting
                     Rating.remove({postingID: {$in: postingList }}, function(err, user){
                         if (err)
                             res,send(err);
@@ -381,13 +387,14 @@ module.exports=function(app, passport){
     	res.redirect("/login.html");
     });
 
-	app.post('/login', passport.authenticate('local-login', {
+	//Method for login, using a local account
+    app.post('/login', passport.authenticate('local-login', {
         successRedirect : '/my-profile.html', // redirect to the profile section if login success
         failureRedirect : '/login.html', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
 
-
+    //Method for signing up a local account
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect : '/my-profile.html', // redirect to the profile section if signup success
         failureRedirect : '/signup.html', // redirect back to the signup page if there is an error
@@ -478,14 +485,12 @@ function validateFields(req, res, next){
             flag = true;
         }
     }   
-    console.log(flag);
     if (flag == true){
         var data = getData(req);
         data.tab = null;
         res.render("invalid.ejs", data);
 
     }else{
-        console.log("next");
         next();       
     }
 }
