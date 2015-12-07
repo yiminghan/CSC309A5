@@ -34,7 +34,7 @@ var createServer = function(port, db, online){
 	//If we are hosting the server online, use an online database
 	if (online == true){
 		app.use(session({secret:"mysecret", 
-						store: new MongoStore({url:'mongodb://yimii:csc309@ds041032.mongolab.com:41032/csc309',
+						store: new MongoStore({url:db,
 						ttl: 14 * 24 * 60 * 60 }),// = 14 days. Default
 				resave: false, saveUninitialized: true}));
 	}else{
