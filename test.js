@@ -12,7 +12,7 @@ describe('Server Test', function(){
 
 	//Before starting the test cases, set up the server and database
 	before(function() {
-		app = server(3000, 'mongodb://127.0.0.1/A5-test');
+		app = server(3000, 'mongodb://127.0.0.1/A5-test', false);
 	});
 
 	//close server after testing

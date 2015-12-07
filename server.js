@@ -9,10 +9,11 @@ var MongoStore = require('connect-mongo')(session);  //Used for production envir
 var passport=require("passport"); //A module that handles authentication and user sessions
 var flash=require('connect-flash'); //Module for storing short messages in the flash area of session
 
+
 // module for compressing http response to gzip. Omitted (see report for why)
 // var compression = require('compression');
 
-var createServer = function(port, db){
+var createServer = function(port, db, online){
 	//Connect to mongoose
 	mongoose.connect(db);
 	//Configure some passport settings
@@ -29,10 +30,16 @@ var createServer = function(port, db){
 	app.use(cookieParser());
 	app.use(bodyParser.urlencoded({ extended: false }))
 	app.use(bodyParser.json())
-	app.use(session({secret:"mysecret", 
-					store: new MongoStore({url:'mongodb://yimii:csc309@ds041032.mongolab.com:41032/csc309',
-					ttl: 14 * 24 * 60 * 60 }),// = 14 days. Default
-			resave: false, saveUninitialized: true}));
+	
+	//If we are hosting the server online, use an online database
+	if (online == true){
+		app.use(session({secret:"mysecret", 
+						store: new MongoStore({url:'mongodb://yimii:csc309@ds041032.mongolab.com:41032/csc309',
+						ttl: 14 * 24 * 60 * 60 }),// = 14 days. Default
+				resave: false, saveUninitialized: true}));
+	}else{
+		app.use(session({secret:"mysecret", resave: false, saveUninitialized: true}));
+	}
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(flash());
@@ -42,7 +49,7 @@ var createServer = function(port, db){
 	app.use("/api", require("./routes/REST-API/message.js"));
 	require("./routes/route.js")(app, passport);
 
-    app.set('port', (process.env.PORT || 3000));
+    app.set('port', (process.env.PORT || port));
 	//Serves the static files (css, image, and javascript file)
 	//We cache the static files for one day (86400000 ms)
 	app.use(express.static(path.join(__dirname,"static"), { maxAge: 86400000 }));

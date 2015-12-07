@@ -10,5 +10,12 @@ if (cluster.isMaster){
 	}
 }else{
 	//Listen on port 3000, and use the specified database
-	server(3000, 'mongodb://yimii:csc309@ds041032.mongolab.com:41032/csc309');
+	
+	//Comment this if uploading to heroku
+	//Use a local database if the server is ran locally
+	server(3000, 'mongodb://127.0.0.1/A5', false);
+
+	//Uncomment this if uploading to heroku
+	//Use an online database is the server is hosted on heroku
+	//server(3000, 'mongodb://yimii:csc309@ds041032.mongolab.com:41032/csc309', true);
 }
